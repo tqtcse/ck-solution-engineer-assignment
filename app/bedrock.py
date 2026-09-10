@@ -13,7 +13,7 @@ def embed(text: str) -> list[float]:
     body = json.dumps({
         "inputText": text,
         "dimensions": config.EMBED_DIM,
-        "normalize": True,       
+        "normalize": True,
     })
     resp = client().invoke_model(modelId=config.EMBED_MODEL, body=body)
     return json.loads(resp["body"].read())["embedding"]

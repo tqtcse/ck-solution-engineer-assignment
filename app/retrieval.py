@@ -15,11 +15,11 @@ def _index():
 def search(query: str, k: int | None = None) -> list[dict]:
     vecs, chunks = _index()
     q = np.array(embed(query), dtype=np.float32)
-    scores = vecs @ q                      
+    scores = vecs @ q
     top = np.argsort(-scores)[: (k or config.TOP_K)]
     return [{**chunks[i], "score": round(float(scores[i]), 4)} for i in top]
 
 
 if __name__ == "__main__":
     for r in search(" ".join(sys.argv[1:]) or "operating segments"):
-        print(f"[{r['score']:.3f}] trang {r['page']}: {r['text'][:150]}...\n")
+        print(f"[{r['score']:.3f}] page {r['page']}: {r['text'][:400]}...\n")

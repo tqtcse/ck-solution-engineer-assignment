@@ -3,7 +3,7 @@ def chunk_page(text: str, size: int = 800, overlap: int = 100) -> list[str]:
     for line in text.split("\n"):
         if n + len(line) > size and buf:
             chunks.append("\n".join(buf).strip())
-            keep, c = [], 0                       
+            keep, c = [], 0
             for prev in reversed(buf):
                 if c >= overlap:
                     break
