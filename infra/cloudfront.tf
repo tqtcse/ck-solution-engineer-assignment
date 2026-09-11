@@ -60,11 +60,19 @@ data "aws_cloudfront_origin_request_policy" "all_viewer_except_host" {
   name = "Managed-AllViewerExceptHostHeader"
 }
 
-resource "aws_lambda_permission" "cloudfront" {
+resource "aws_lambda_permission" "cloudfront_url" {
   statement_id           = "AllowCloudFrontOAC"
   action                 = "lambda:InvokeFunctionUrl"
   function_name          = aws_lambda_function.app.function_name
   principal              = "cloudfront.amazonaws.com"
   source_arn             = aws_cloudfront_distribution.app.arn
   function_url_auth_type = "AWS_IAM"
+}
+
+resource "aws_lambda_permission" "cloudfront_invoke" {
+  statement_id  = "AllowCloudFrontInvokeFn"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.app.function_name
+  principal     = "cloudfront.amazonaws.com"
+  source_arn    = aws_cloudfront_distribution.app.arn
 }

@@ -28,8 +28,9 @@ TOOL_SPECS = [
     {
         "toolSpec": {
             "name": "submit_verification",
-            "description": "Submit customer identity verification details. Only call this when ALL THREE items "
-                           "have been collected: email, last 4 digits of SSN, and date of birth. Pass verbatim user input.",
+            "description": "Submit customer identity verification details. Call this as soon as the customer "
+                           "provides ANY of the three items, one at a time. The server accumulates them and "
+                           "replies with what is still needed. Pass verbatim user input.",
             "inputSchema": {
                 "json": {
                     "type": "object",
@@ -41,7 +42,7 @@ TOOL_SPECS = [
                             "description": "Verbatim input, any natural date format"
                         }
                     },
-                    "required": ["email", "ssn_last4", "dob"]
+                    "required": []
                 }
             }
         }
@@ -93,32 +94,44 @@ def _search_kb(args, _state):
 
 
 def _submit_verification(args, state: SessionState):
-    email, e_err = verification.parse_email(args.get("email", ""))
-    ssn, s_err = verification.parse_ssn_last4(args.get("ssn_last4", ""))
-    dob, d_err = verification.parse_dob(args.get("dob", ""))
+    problems = []
 
-    if isinstance(dob, verification.Ambiguous):
-        return {
-            "verified": False,
-            "need_clarification": "dob",
-            "message": f"Date of birth '{args.get('dob')}' can be interpreted in two ways: "
-                       f"{dob.first.isoformat()} or {dob.second.isoformat()}. "
-                       "Please ask the customer to clarify which one is correct."
-        }
+    if args.get("email"):
+        email, err = verification.parse_email(args["email"])
+        problems.append(err) if err else state.collected.update(email=email)
 
-    problems = [x for x in (e_err, s_err, d_err) if x]
+    if args.get("ssn_last4"):
+        ssn, err = verification.parse_ssn_last4(args["ssn_last4"])
+        problems.append(err) if err else state.collected.update(ssn_last4=ssn)
+
+    if args.get("dob"):
+        dob, err = verification.parse_dob(args["dob"])
+        if isinstance(dob, verification.Ambiguous):
+            return {
+                "verified": False,
+                "need_clarification": "dob",
+                "message": f"Date of birth '{args['dob']}' can be interpreted in two ways: "
+                           f"{dob.first.isoformat()} or {dob.second.isoformat()}. "
+                           "Please ask the customer to clarify which one is correct."
+            }
+        problems.append(err) if err else state.collected.update(dob=dob.isoformat())
+
     if problems:
         state.failed_attempts += 1
         return {"verified": False, "problems": problems}
 
+    if state.missing():
+        return {"verified": False, "still_needed": state.missing()}
+
     for c in _CUST:
-        if (c["email"] == email and c["ssn_last4"] == ssn
-                and c["dob"] == dob.isoformat()):
-            state.verified = True                     
+        if all(c[k] == state.collected[k] for k in ("email", "ssn_last4", "dob")):
+            state.verified = True
             state.customer_id = c["customer_id"]
+            state.collected = {}
             return {"verified": True, "greeting_name": c["full_name"].split()[0]}
 
     state.failed_attempts += 1
+    state.collected = {}
     return {
         "verified": False,
         "message": "Information does not match any record. Do not disclose which specific field was incorrect."

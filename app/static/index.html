@@ -116,10 +116,14 @@
             add('u', text);
             let bubble = null;
 
+            const body = JSON.stringify({ session_id: sid, message: text });
+            const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(body));
+            const hash = [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, '0')).join('');
+
             const res = await fetch('/chat/stream', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ session_id: sid, message: text })
+                headers: { 'Content-Type': 'application/json', 'x-amz-content-sha256': hash },
+                body
             });
 
             const reader = res.body.getReader(), dec = new TextDecoder();
