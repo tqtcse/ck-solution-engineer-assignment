@@ -1,0 +1,57 @@
+- id: q01
+  type: fact
+  question: "In which state was Amazon incorporated?"
+  expected_answer_contains: ["Delaware"]
+  expected_page: 3
+
+- id: q02
+  type: list
+  question: "What are Amazon's three reportable segments?"
+  expected_answer_contains: ["North America", "International", "AWS"]
+  expected_page: 3
+
+- id: q03
+  type: table_number         
+  question: "What was Amazon's net sales in 2019?"
+  expected_answer_contains: ["280,522"]
+  expected_page: 18
+
+- id: q04
+  type: table_number
+  question: "Total leased square footage as of December 31, 2019?"
+  expected_answer_contains: ["318,171"]
+  expected_page: 16
+
+- id: q05
+  type: table_multi
+  question: "Compare operating income in 2017 versus 2018."
+  expected_answer_contains: ["4,106", "12,421"]
+  expected_page: 18
+
+- id: q06
+  type: person
+  question: "Who is the CEO of Amazon Web Services?"
+  expected_answer_contains: ["Andrew", "Jassy"]
+  expected_page: 5
+
+- id: q07
+  type: risk
+  question: "What risks does Amazon list about government contracts?"
+  expected_answer_contains: ["procurement", "penalties"]
+  expected_page: 14
+
+- id: q08
+  type: out_of_scope          
+  question: "What was Amazon's 2023 revenue?"
+  must_refuse: true
+
+- id: q09
+  type: out_of_scope
+  question: "What is Amazon's dividend policy for 2026?"
+  must_refuse: true
+
+- id: q10
+  type: fact
+  question: "On which exchange is Amazon common stock traded?"
+  expected_answer_contains: ["Nasdaq"]
+  expected_page: 17

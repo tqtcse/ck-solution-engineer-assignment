@@ -1,0 +1,48 @@
+[
+    {
+        "order_id": "CK-2026-0001",
+        "customer_id": "C001",
+        "status": "DELIVERED",
+        "carrier": "UPS",
+        "tracking": "1Z999AA10123456784",
+        "delivered_on": "2026-08-28",
+        "items": [
+            "Wireless Mouse"
+        ]
+    },
+    {
+        "order_id": "CK-2026-0007",
+        "customer_id": "C001",
+        "status": "SHIPPED",
+        "carrier": "FedEx",
+        "tracking": "7712 3456 7890",
+        "eta": "2026-09-13",
+        "items": [
+            "USB-C Hub",
+            "HDMI Cable"
+        ]
+    },
+    {
+        "order_id": "CK-2026-0012",
+        "customer_id": "C001",
+        "status": "DELAYED",
+        "carrier": "USPS",
+        "tracking": "9400 1000 0000",
+        "reason": "Thời tiết xấu tại trung tâm chia chọn Memphis",
+        "eta": "2026-09-16",
+        "items": [
+            "Mechanical Keyboard"
+        ]
+    },
+    {
+        "order_id": "CK-2026-0021",
+        "customer_id": "C002",
+        "status": "OUT_FOR_DELIVERY",
+        "carrier": "UPS",
+        "tracking": "1Z999AA10987654321",
+        "eta": "2026-09-10",
+        "items": [
+            "Standing Desk Mat"
+        ]
+    }
+]

@@ -1,0 +1,11 @@
+
+.venv/
+venv/
+data/raw
+
+.env
+
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

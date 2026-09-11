@@ -1,0 +1,23 @@
+[
+    {
+        "customer_id": "C001",
+        "email": "alice@ck1.com",
+        "full_name": "Alice Nguyen",
+        "ssn_last4": "1234",
+        "dob": "1990-01-05"
+    },
+    {
+        "customer_id": "C002",
+        "email": "bob@ck2.com",
+        "full_name": "Bob Tran",
+        "ssn_last4": "5678",
+        "dob": "1985-07-22"
+    },
+    {
+        "customer_id": "C003",
+        "email": "carol@ck123.com",
+        "full_name": "Carol Le",
+        "ssn_last4": "4321",
+        "dob": "1978-11-30"
+    }
+]
