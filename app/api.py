@@ -6,10 +6,11 @@ from fastapi.responses import FileResponse, StreamingResponse
 from app import config
 from app.agent import run_turn
 from app.session import get
+from app import retrieval
 
 app = FastAPI(title="CK Agent")
 INDEX = config.ROOT / "app" / "static" / "index.html"
-
+retrieval._index() 
 
 @app.get("/")
 def home():
