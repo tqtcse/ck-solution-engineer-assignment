@@ -1,4 +1,5 @@
 import re
+
 import pymupdf
 
 NOISE = re.compile(r"^\s*(Table of Contents|\d{1,3}|_{3,})\s*$")

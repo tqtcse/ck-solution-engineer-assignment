@@ -57,6 +57,13 @@ data "aws_iam_policy_document" "gha" {
       "dynamodb:ListTagsOfResource",
       "logs:CreateLogGroup", "logs:DescribeLogGroups", "logs:PutRetentionPolicy",
       "logs:TagResource", "logs:ListTagsForResource", "logs:DeleteLogGroup",
+      "cloudfront:GetDistribution", "cloudfront:GetDistributionConfig",
+      "cloudfront:UpdateDistribution", "cloudfront:CreateDistribution",
+      "cloudfront:ListTagsForResource", "cloudfront:TagResource",
+      "cloudfront:GetOriginAccessControl", "cloudfront:CreateOriginAccessControl",
+      "cloudfront:UpdateOriginAccessControl", "cloudfront:GetCachePolicy",
+      "cloudfront:ListCachePolicies", "cloudfront:GetOriginRequestPolicy",
+      "cloudfront:ListOriginRequestPolicies", "cloudfront:CreateInvalidation",
     ]
     resources = ["*"]
   }

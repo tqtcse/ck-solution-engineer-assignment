@@ -1,5 +1,9 @@
-import argparse, hashlib, json
+import argparse
+import hashlib
+import json
+
 import numpy as np
+
 from app import config
 from app.bedrock import embed
 from ingestion.chunk import chunk_page

@@ -6,6 +6,7 @@ from dateutil import parser as dtp
 
 ANY_EMAIL = re.compile(r"[^@\s]+@[^\s]+\.[a-z]{2,}", re.I)
 CK_EMAIL = re.compile(r"^[^@\s]+@ck\d+\.[a-z]{2,}$", re.I)
+ISO_DATE = re.compile(r"^\d{4}-\d{1,2}-\d{1,2}$")
 
 _DEF_A = datetime(1900, 1, 1)
 _DEF_B = datetime(2001, 6, 15)
@@ -51,7 +52,14 @@ def parse_dob(text: str, today: date | None = None):
     if not text:
         return None, "No date of birth found in that message."
 
-    candidates = {d for d in (_parse_with(text, False), _parse_with(text, True)) if d}
+    if ISO_DATE.match(text):
+        y, m, d = (int(p) for p in text.split("-"))
+        try:
+            candidates = {date(y, m, d)}
+        except ValueError:
+            candidates = set()
+    else:
+        candidates = {d for d in (_parse_with(text, False), _parse_with(text, True)) if d}
     if not candidates:
         return None, ("I could not read that date. Please include day, month and "
                       "year - for example 'Jan 5 1990' or '1990-01-05'.")

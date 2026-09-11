@@ -1,6 +1,9 @@
-import json, sys
+import json
+import sys
 from functools import lru_cache
+
 import numpy as np
+
 from app import config
 from app.bedrock import embed
 
@@ -8,7 +11,8 @@ from app.bedrock import embed
 @lru_cache(maxsize=1)
 def _index():
     vecs = np.load(config.index_path())["vectors"]
-    chunks = [json.loads(l) for l in open(config.chunks_path(), encoding="utf8")]
+    with open(config.chunks_path(), encoding="utf8") as f:
+        chunks = [json.loads(line) for line in f]
     return vecs, chunks
 
 

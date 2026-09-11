@@ -1,4 +1,3 @@
-import sys
 from app.agent import run_turn
 from app.session import get
 
