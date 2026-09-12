@@ -244,48 +244,59 @@ with Diagram(
 
 # ──────────────────────────────────────────────────────────────────────────
 # 3. CI/CD + IaC
+#    Vẽ lại 13/09/2026 theo `terraform state list` thật. Bản cũ sai 6 chỗ:
+#    DynamoDB x2 (thật ra 1), có KMS (thật ra không), S3 vector index (không
+#    tồn tại — index nướng trong image), S3 tfstate nằm trong hộp "một lệnh
+#    apply" (nó thuộc bootstrap), "module tái dùng" (root phẳng), và CI chạy
+#    eval golden set (không hề).
 # ──────────────────────────────────────────────────────────────────────────
 with Diagram(
-    "3 · CI/CD + Infrastructure as Code (Level 200)",
+    "3 · CI/CD + Infrastructure as Code — hai root, một ranh giới quyền (Level 200)",
     filename="3-cicd-iac",
     show=False,
     direction="LR",
     outformat=["png", "svg"],
-    graph_attr=GRAPH,
+    graph_attr={**GRAPH, "ranksep": "1.3", "nodesep": "0.7"},
     node_attr=NODE,
     edge_attr=EDGE,
 ):
     dev = User("Dev")
 
-    with Cluster("GitHub · pipeline", graph_attr=CICD):
+    with Cluster("GitHub Actions", graph_attr=CICD):
         repo = Github("Repository")
-        ci = GithubActions("CI · pull request\nruff + pytest\n(+ eval golden set)")
-        cd = GithubActions("CD · push main\nbuild → push → apply")
-        tf = Terraform("Terraform\nmodule tái dùng")
+        ci = GithubActions("ci.yml — PR & push\nruff · pytest 95\nfmt · validate\nKHÔNG có key AWS")
+        cd = GithubActions("deploy.yml — chỉ push main\n① OIDC  ② build+push\n③ apply  ④ smoke curl thật\nsmoke không 200 → job ĐỎ")
         repo >> Edge(color=BLUE) >> ci
-        repo >> Edge(color=BLUE) >> cd
-        cd >> Edge(color=BLUE) >> tf
+        repo >> Edge(color=BLUE, penwidth="2.0") >> cd
 
-    with Cluster("AWS Cloud", graph_attr=AWS):
-        role = IAMRole("IAM Role cho OIDC\nkhông có access key tĩnh")
+    with Cluster("AWS Cloud · us-east-1", graph_attr=AWS):
 
-        with Cluster("Hạ tầng do Terraform quản lý (một lệnh apply)", graph_attr=APP):
-            ecr = ECR("Amazon ECR")
-            fn = Lambda("Lambda +\nFunction URL")
-            ddb = Dynamodb("DynamoDB × 2")
-            s3d = S3("S3 · vector index")
-            cw = CloudwatchLogs("CloudWatch\nretention 7 ngày")
-            kms = KMS("KMS")
-            tf_state = S3("S3 · tfstate\n(có khoá state)")
-            # cạnh vô hình -> ép xếp thành hàng ngang cho gọn
-            ecr >> Edge(label="deploy image", color=BLUE, style="dashed") >> fn
-            fn >> Edge(style="invis") >> ddb >> Edge(style="invis") >> s3d
-            s3d >> Edge(style="invis") >> cw >> Edge(style="invis") >> kms
-            kms >> Edge(style="invis") >> tf_state
+        with Cluster("infra/bootstrap/ — CHẠY TAY bằng credential admin", graph_attr=OPS):
+            oidc = IAMRole("OIDC provider\nGitHub")
+            role_gha = IAMRole("role ck-agent-dev-gha\nsub khoá theo ID bất biến")
+            role_lambda = IAMRole("role ck-agent-dev-lambda")
+            tfstate = S3("S3 tfstate\nuse_lockfile = true")
 
-    dev >> Edge(color=BLUE) >> repo
-    cd >> Edge(label="OIDC AssumeRole\n(không key tĩnh)", color=RED, penwidth="2.2") >> role
-    cd >> Edge(label="docker push", color=BLUE) >> ecr
-    tf >> Edge(label="terraform apply", color=ORANGE, penwidth="2.2") >> fn
+        with Cluster("infra/ — CI apply · 18 resource", graph_attr=APP):
+            ecr = ECR("ECR + lifecycle policy\ntag = commit sha")
+            fn = Lambda("Lambda + Function URL\nAWS_IAM · RESPONSE_STREAM")
+            cdn = CloudFront("CloudFront + OAC\n2 lambda_permission")
+            ddb = Dynamodb("DynamoDB × 1\nconversations")
+            cw = CloudwatchLogs("Log group\n+ metric filter")
+            alarms = CloudwatchAlarm("3 alarms\nErrors · p95 · Bedrock 429")
+            ecr >> Edge(label="image", color=GREEN, style="dashed") >> fn
+            fn >> Edge(style="invis") >> cdn >> Edge(style="invis") >> ddb
+            ddb >> Edge(style="invis") >> cw >> Edge(style="invis") >> alarms
+
+    dev >> Edge(label="git push", color=BLUE, penwidth="2.0") >> repo
+
+    cd >> Edge(label="AssumeRole", color=RED, penwidth="2.4") >> role_gha
+    cd >> Edge(label="docker push", color=BLUE, penwidth="2.0") >> ecr
+    cd >> Edge(label="terraform apply", color=ORANGE, penwidth="2.4") >> fn
+    cd >> Edge(label="state", color=TEAL, style="dashed", constraint="false") >> tfstate
+    oidc >> Edge(color=RED, style="dotted", constraint="false") >> role_gha
+    role_lambda >> Edge(label="CI chỉ ĐỌC", color=RED,
+                        style="dotted", constraint="false") >> fn
+
 
 print("Đã sinh 3 sơ đồ (PNG + SVG) trong", os.getcwd())
