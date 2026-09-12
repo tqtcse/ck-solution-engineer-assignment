@@ -1,6 +1,6 @@
 import json
 
-from app import config, retrieval, verification
+from app import config, obs, retrieval, verification
 from app.session import SessionState
 
 _CUST = json.loads((config.DATA / "customers.json").read_text(encoding="utf8"))
@@ -80,8 +80,13 @@ TOOL_SPECS = [
 
 
 def _search_kb(args, _state):
-    hits = retrieval.search(args.get("query", ""))
-    if not hits or hits[0]["score"] < 0.3:      
+    query = args.get("query", "")
+    hits = retrieval.search(query)
+    top1 = hits[0]["score"] if hits else 0.0
+    obs.log("retrieval", query=query, top1=top1, pages=[h["page"] for h in hits])
+    obs.metric("RetrievalTop1", top1, "None")
+    if not hits or top1 < 0.3:
+        obs.metric("KbMiss", 1)
         return {
             "results": [],
             "note": "No relevant content found in the knowledge base."
@@ -119,6 +124,8 @@ def _submit_verification(args, state: SessionState):
 
     if problems:
         state.failed_attempts += 1
+        obs.log("verify_failed", reason="unparseable", attempts=state.failed_attempts)
+        obs.metric("VerificationFailures", 1)
         return {"verified": False, "problems": problems}
 
     if state.missing():
@@ -129,10 +136,13 @@ def _submit_verification(args, state: SessionState):
             state.verified = True
             state.customer_id = c["customer_id"]
             state.collected = {}
+            obs.log("verified", customer_id=c["customer_id"], attempts=state.failed_attempts)
             return {"verified": True, "greeting_name": c["full_name"].split()[0]}
 
     state.failed_attempts += 1
     state.collected = {}
+    obs.log("verify_failed", reason="no_match", attempts=state.failed_attempts)
+    obs.metric("VerificationFailures", 1)
     return {
         "verified": False,
         "message": "Information does not match any record. Do not disclose which specific field was incorrect."

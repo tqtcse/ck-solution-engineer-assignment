@@ -1,9 +1,10 @@
 import json
+import uuid
 
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, StreamingResponse
 
-from app import config, retrieval
+from app import config, obs, retrieval
 from app.agent import run_turn
 from app.session import get
 
@@ -26,12 +27,16 @@ async def chat_stream(req: Request):
     body = await req.json()
     state = get(body.get("session_id", "anon"))
     text = (body.get("message") or "").strip()
+    obs.trace_id.set(uuid.uuid4().hex[:12])
+    obs.session_id.set(state.session_id)
 
     def gen():
         try:
             for kind, payload in run_turn(state, text):
                 yield f"data: {json.dumps({'type': kind, 'data': payload}, ensure_ascii=False)}\n\n"
         except Exception as exc:
+            obs.log("turn_failed", detail=str(exc)[:200])
+            obs.metric("TurnErrors", 1)
             yield f"data: {json.dumps({'type': 'error', 'data': str(exc)[:200]})}\n\n"
 
     return StreamingResponse(gen(), media_type="text/event-stream",

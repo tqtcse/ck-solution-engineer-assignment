@@ -1,4 +1,3 @@
-import re
 import time
 import uuid
 from functools import lru_cache
@@ -7,22 +6,9 @@ import boto3
 from boto3.dynamodb.conditions import Key
 
 from app import config
+from app.obs import redact
 
 TTL_DAYS = 30
-
-_SSN = re.compile(r"\b\d{3}[- ]?\d{2}[- ]?\d{4}\b")
-_EMAIL = re.compile(r"[^@\s]+@[^\s]+\.[a-z]{2,}", re.I)
-_DATE = re.compile(r"\b(\d{1,4}[-/]\d{1,2}[-/]\d{1,4}|"
-                   r"(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+"
-                   r"\d{1,2}(?:st|nd|rd|th)?,?\s+\d{4})\b", re.I)
-_DIGITS4 = re.compile(r"(?<![\w-])\d{4}(?![\w-])")
-
-
-def redact(text: str) -> str:
-    out = _SSN.sub("***-**-****", text)
-    out = _EMAIL.sub("***@***", out)
-    out = _DATE.sub("****-**-**", out)
-    return _DIGITS4.sub("****", out)
 
 
 @lru_cache(maxsize=1)
