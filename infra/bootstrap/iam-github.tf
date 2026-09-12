@@ -1,7 +1,10 @@
 resource "aws_iam_openid_connect_provider" "github" {
-  url             = "https://token.actions.githubusercontent.com"
-  client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
+  url            = "https://token.actions.githubusercontent.com"
+  client_id_list = ["sts.amazonaws.com"]
+  thumbprint_list = [
+    "6938fd4d98bab03faadb97b34396831e3780aea1",
+    "1c58a3a8518e8759bf075b76b750d4f2df264fcd",
+  ]
 }
 
 data "aws_iam_policy_document" "gha_trust" {
@@ -19,7 +22,7 @@ data "aws_iam_policy_document" "gha_trust" {
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.github_repo}:ref:refs/heads/main"]
+      values   = ["${var.github_sub_prefix}:ref:refs/heads/main"]
     }
   }
 }
@@ -36,9 +39,12 @@ data "aws_iam_policy_document" "gha" {
       "ecr:BatchCheckLayerAvailability", "ecr:CompleteLayerUpload",
       "ecr:InitiateLayerUpload", "ecr:PutImage", "ecr:UploadLayerPart",
       "ecr:BatchGetImage", "ecr:GetDownloadUrlForLayer",
-      "ecr:DescribeRepositories", "ecr:DescribeImages",
-      "ecr:CreateRepository", "ecr:PutLifecyclePolicy",
-      "ecr:TagResource", "ecr:ListTagsForResource",
+      "ecr:DescribeRepositories", "ecr:DescribeImages", "ecr:ListImages",
+      "ecr:CreateRepository", "ecr:TagResource", "ecr:UntagResource",
+      "ecr:ListTagsForResource", "ecr:GetLifecyclePolicy",
+      "ecr:PutLifecyclePolicy", "ecr:DeleteLifecyclePolicy",
+      "ecr:GetRepositoryPolicy", "ecr:SetRepositoryPolicy",
+      "ecr:PutImageScanningConfiguration", "ecr:PutImageTagMutability",
     ]
     resources = ["arn:aws:ecr:${var.region}:${local.account}:repository/${local.name}"]
   }
