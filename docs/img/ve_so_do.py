@@ -130,14 +130,13 @@ with Diagram(
                 api = Fastapi("FastAPI + LWA\nSSE /chat/stream")
                 agent = Python("Agent loop\ntool use · tối đa 6 bước")
                 tools = Python("Tools + GUARDRAIL\nkb_search · verify · orders")
+                router = Python("Router intent — THREAD\nngoài đường tới hạn\nluật → state → model")
                 api >> Edge(color=BLUE, penwidth="2.0") >> agent
                 agent >> Edge(color=BLUE, penwidth="2.0") >> tools
 
             with Cluster("Nướng sẵn trong image", graph_attr=DATA):
                 index = Storage("index_v2.npz + chunks\nINDEX_VERSION đổi được")
                 oms = Storage("customers.json\norders.json — mock OMS")
-
-            router = Python("Router intent\nluật → state → model")
 
         with Cluster("Amazon Bedrock", graph_attr=MODEL):
             haiku = Bedrock("Claude Haiku 4.5\nhội thoại + tool use")
@@ -162,7 +161,7 @@ with Diagram(
     agent >> Edge(label="stream", color=PURPLE, penwidth="2.0") >> haiku
     tools >> Edge(label="embed", color=PURPLE) >> titan
 
-    api >> Edge(label="thread — NGOÀI đường tới hạn", color=ORANGE,
+    api >> Edge(label="song song", color=ORANGE,
                 style="dashed", constraint="false") >> router
     router >> Edge(color=PURPLE, style="dashed", constraint="false") >> nova
 
