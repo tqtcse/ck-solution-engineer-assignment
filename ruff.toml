@@ -1,5 +1,5 @@
 line-length = 120
-exclude = [".venv", "infra", "data"]
+exclude = [".venv", "infra", "data", "docs/img"]
 
 [lint]
 select = ["E", "F", "I", "UP"]
