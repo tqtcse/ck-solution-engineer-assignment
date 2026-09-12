@@ -33,7 +33,7 @@ def _records_v2():
     for doc in pre.documents(PDF):
         if doc["is_table"]:
             tables += 1
-            pieces = [pre.narrate(doc["text"], cache) + "\n\n" + doc["text"]]
+            pieces = [doc["text"] + "\n\n" + pre.narrate(doc["text"], cache)]
         else:
             pieces = chunk_page(doc["text"])
         for piece in pieces:
@@ -43,7 +43,7 @@ def _records_v2():
                             "is_table": doc["is_table"],
                             "text": pre.prefix(doc) + piece})
     pre.cache_save(cache)
-    print(f"  {tables} table blocks, each as one chunk: narration + exact rows")
+    print(f"  {tables} table blocks, each as one chunk: exact rows then narration")
     return records
 
 
