@@ -13,6 +13,6 @@ COPY requirements-lambda.txt .
 RUN pip install --no-cache-dir -r requirements-lambda.txt
 
 COPY app/ app/
-COPY data/index_v1.npz data/chunks_v1.jsonl data/customers.json data/orders.json data/
+COPY data/index_v1.npz data/chunks_v1.jsonl data/index_v2.npz data/chunks_v2.jsonl data/customers.json data/orders.json data/
 
 CMD ["uvicorn", "app.api:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]

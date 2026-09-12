@@ -13,6 +13,6 @@ variable "chat_model" {
 variable "embed_model" {
   default = "amazon.titan-embed-text-v2:0"
 }
-variable "index_version" { default = "v1" }
+variable "index_version" { default = "v2" }
 variable "memory_size" { default = 2048 }
 variable "log_retention" { default = 7 }
