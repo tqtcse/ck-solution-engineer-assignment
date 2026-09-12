@@ -178,6 +178,10 @@ with Diagram(
 
 # ──────────────────────────────────────────────────────────────────────────
 # 2. Pipeline dữ liệu: v1 ngây thơ vs v2 cải tiến
+#    Vẽ lại 12/09/2026 theo code thật. Bản cũ sai: nguồn KHÔNG ở S3 (là file
+#    cục bộ data/raw/), v2 KHÔNG sinh Markdown, chunk tính theo KÝ TỰ không
+#    phải token, golden set là 12 câu không phải 15-20, và index là file trong
+#    repo rồi COPY vào image chứ không nằm trên S3.
 # ──────────────────────────────────────────────────────────────────────────
 with Diagram(
     "2 · Pipeline dữ liệu — vì sao retrieval sai và sửa thế nào (Level 300 #5)",
@@ -185,47 +189,57 @@ with Diagram(
     show=False,
     direction="LR",
     outformat=["png", "svg"],
-    graph_attr={**GRAPH, "ranksep": "1.2"},
+    graph_attr={**GRAPH, "ranksep": "1.4", "nodesep": "0.9"},
     node_attr=NODE,
     edge_attr=EDGE,
 ):
-    with Cluster("Nguồn", graph_attr=INGEST):
-        raw = S3("S3 · tài liệu gốc\nCompany-10k-18pages.pdf\n(10-K Amazon FY2019)")
+    with Cluster("Nguồn — file cục bộ, chạy tay", graph_attr=INGEST):
+        raw = Storage("data/raw/\nCompany-10k-18pages.pdf\n18 trang · KHÔNG ở S3")
 
-    with Cluster("v1 — chunk ngây thơ  (BASELINE)", graph_attr=BAD):
-        v1_ex = Python("PyMuPDF\nlấy text thô")
-        v1_ch = Python("Chunk cố định\n800 ký tự · overlap 100")
-        v1_ex >> Edge(color=RED) >> v1_ch
+    with Cluster("v1 — BASELINE  (ingestion/extract.py)", graph_attr=BAD):
+        v1_ex = Python("pymupdf get_text()\nlấy text thô từng trang")
+        v1_noise = Python("LỖI 1 — bộ lọc nhiễu\nxoá MỌI dòng 1-3 chữ số\n596 · 493 biến mất khỏi index")
+        v1_flat = Python("LỖI 2 — bảng bị duỗi\n280,522 không dính với 2019")
+        v1_ch = Python("chunk_page()\n800 KÝ TỰ · overlap 100")
+        v1_ex >> Edge(color=RED) >> v1_noise >> Edge(color=RED) >> v1_flat >> Edge(color=RED) >> v1_ch
 
-    with Cluster("v2 — pipeline cải tiến", graph_attr=GOOD):
-        v2_clean = Python("Bỏ boilerplate\n'Table of Contents' ×18\n+ số trang")
-        v2_struct = Python("Nhận diện cấu trúc\nItem 1/1A/2/6 + tiêu đề\nrisk factor")
-        v2_table = Python("Tách bảng riêng\n-> Markdown giữ header cột")
-        v2_llm = Bedrock("LLM diễn giải bảng\n'net sales 2019 = $280,522M'")
-        v2_chunk = Python("Chunk theo section\n400–800 token · metadata\n(item, page, is_table)")
-        v2_clean >> Edge(color=GREEN) >> v2_struct >> Edge(color=GREEN) >> v2_table
-        v2_table >> Edge(color=GREEN) >> v2_llm >> Edge(color=GREEN) >> v2_chunk
+    with Cluster("v2 — hiểu cấu trúc  (ingestion/preprocess_v2.py)", graph_attr=GOOD):
+        v2_toc = Python("Bỏ trang mục lục\ntrang có >= 5 dòng 'Item N.'")
+        v2_sec = Python("Bám section\nItem 1 / 1A / 2 / 6\n+ tiêu đề mục")
+        v2_tab = Python("_split_table_rows()\nghép mỗi số với NĂM của nó")
+        v2_llm = Bedrock("narrate() — Haiku 4.5\n1-3 câu diễn giải bảng")
+        v2_one = Python("Khối bảng = 1 CHUNK\nhàng số chính xác TRƯỚC\ndiễn giải SAU")
+        v2_pre = Python("prefix() gắn metadata\n[page 18 | Item 6 | table]")
+        v2_toc >> Edge(color=GREEN) >> v2_sec >> Edge(color=GREEN) >> v2_tab
+        v2_tab >> Edge(color=GREEN) >> v2_llm >> Edge(color=GREEN) >> v2_one
+        v2_one >> Edge(color=GREEN) >> v2_pre
 
-    embed = Bedrock("Titan Embeddings v2")
+    with Cluster("Nhúng vector", graph_attr=DATA):
+        cache = Storage(".embed_cache.json\nkhoá = SHA-1\n1 mới · 127 từ cache")
+        embed = Bedrock("Titan Embeddings v2\n1024 chiều · chuẩn hoá")
+        cache >> Edge(color=TEAL, label="chỉ chunk mới") >> embed
 
-    with Cluster("Chỉ mục", graph_attr=DATA):
-        idx1 = S3("index_v1.npz")
-        idx2 = S3("index_v2.npz")
+    with Cluster("Chỉ mục — file trong repo, COPY vào image", graph_attr=DATA):
+        idx1 = Storage("index_v1.npz\nchunks_v1.jsonl")
+        idx2 = Storage("index_v2.npz\nchunks_v2.jsonl")
 
     with Cluster("Đo lường", graph_attr=OPS):
-        golden = Python("golden_set.yaml\n15–20 câu (có câu số liệu\ntrong bảng)")
-        runner = Python("run_eval.py\nhit@3 · answer_correct\ngrounded · refusal")
-        report = Python("results.md\nBẢNG SỐ TRƯỚC / SAU")
+        golden = Python("golden_set.yaml\n12 câu")
+        runner = Python("run_eval.py\nhit@3 · correct · grounded\ntop1_score")
+        report = Python("compare.py -> results.md\nBẢNG: 3/5 -> 5/5")
         golden >> Edge(color=RED) >> runner >> Edge(color=RED) >> report
 
-    raw >> Edge(color=RED, label="lỗi: bảng vỡ, mất dòng năm") >> v1_ex
-    raw >> Edge(color=GREEN) >> v2_clean
-    v1_ch >> Edge(color=RED) >> embed
-    v2_chunk >> Edge(color=GREEN) >> embed
+    raw >> Edge(color=RED, penwidth="2.0") >> v1_ex
+    raw >> Edge(color=GREEN, penwidth="2.0") >> v2_toc
+
+    v1_ch >> Edge(color=RED, style="dashed") >> cache
+    v2_pre >> Edge(color=GREEN, penwidth="2.0") >> cache
+
     embed >> Edge(color=RED, style="dashed") >> idx1
-    embed >> Edge(color=GREEN) >> idx2
-    idx1 >> Edge(color="#718096", style="dashed") >> runner
-    idx2 >> Edge(color="#718096") >> runner
+    embed >> Edge(color=GREEN, penwidth="2.0") >> idx2
+
+    idx1 >> Edge(color="#718096", style="dashed", label="cột TRƯỚC") >> runner
+    idx2 >> Edge(color="#718096", label="cột SAU") >> runner
 
 
 # ──────────────────────────────────────────────────────────────────────────
