@@ -17,17 +17,43 @@ def _cache_load():
     return json.loads(CACHE.read_text()) if CACHE.exists() else {}
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--version", default="v1", choices=["v1", "v2"])
-    args = ap.parse_args()
-
+def _records_v1():
     records = []
     for page_no, text in pages(PDF):
         for piece in chunk_page(text):
             records.append({"chunk_id": f"p{page_no}-{len(records)}",
                             "page": page_no, "text": piece})
-    print(f"{len(records)} chunks from 18 pages")
+    return records
+
+
+def _records_v2():
+    from ingestion import preprocess_v2 as pre
+
+    cache, records, tables = pre.cache_load(), [], 0
+    for doc in pre.documents(PDF):
+        if doc["is_table"]:
+            tables += 1
+            pieces = [pre.narrate(doc["text"], cache) + "\n\n" + doc["text"]]
+        else:
+            pieces = chunk_page(doc["text"])
+        for piece in pieces:
+            records.append({"chunk_id": f"p{doc['page']}-{len(records)}",
+                            "page": doc["page"], "item": doc["item"],
+                            "section_title": doc["section_title"],
+                            "is_table": doc["is_table"],
+                            "text": pre.prefix(doc) + piece})
+    pre.cache_save(cache)
+    print(f"  {tables} table blocks, each as one chunk: narration + exact rows")
+    return records
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--version", default="v1", choices=["v1", "v2"])
+    args = ap.parse_args()
+
+    records = _records_v2() if args.version == "v2" else _records_v1()
+    print(f"{len(records)} chunks")
 
     # Cache
     cache, vectors, new = _cache_load(), [], 0

@@ -1,0 +1,161 @@
+[
+  {
+    "id": "q01",
+    "type": "fact",
+    "top1_score": 0.211,
+    "pages": [
+      3,
+      12
+    ],
+    "hit3": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to the excerpt on page 3, Amazon.com, Inc. was incorporated in 1994 in the state of Washington and reincorporated in 1996 in the state of Delaware."
+  },
+  {
+    "id": "q02",
+    "type": "list",
+    "top1_score": 0.539,
+    "pages": [
+      3,
+      16
+    ],
+    "hit3": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to the document, the company's three reportable segments are:\n\n1. **North America**\n2. **International**\n3. **Amazon Web Services (\"AWS\")**\n\nAs stated on page 3: \"We have organized our operations into three segments: North America, International, and Amazon Web Services (\"AWS\"). These segments reflect the way the Company evaluates its business performance and manages its operations.\""
+  },
+  {
+    "id": "q03",
+    "type": "table_number",
+    "top1_score": 0.476,
+    "pages": [
+      3,
+      4,
+      18
+    ],
+    "hit3": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to the financial table on page 18, the company's net sales in 2019 were $280,522 million (or $280.5 billion as stated in the summary text on the same page)."
+  },
+  {
+    "id": "q04",
+    "type": "table_number",
+    "top1_score": 0.503,
+    "pages": [
+      16,
+      18
+    ],
+    "hit3": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to the properties table on page 16, the total leased square footage as of December 31, 2019 was **318,171 thousand square feet**.\n\nThis figure represents the total leased space excluding sub-leased space, as noted in footnote (1) of the table."
+  },
+  {
+    "id": "q05",
+    "type": "table_multi",
+    "top1_score": 0.266,
+    "pages": [
+      13,
+      18
+    ],
+    "hit3": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "Based on the financial table on page 18, operating income was:\n\n- **2017: $4,106 million**\n- **2018: $12,421 million**\n\nOperating income increased significantly from 2017 to 2018, more than tripling with an increase of approximately $8,315 million or about 202%."
+  },
+  {
+    "id": "q06",
+    "type": "person",
+    "top1_score": 0.512,
+    "pages": [
+      5
+    ],
+    "hit3": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to the excerpts provided, **Andrew R. Jassy** is the CEO Amazon Web Services. He has served in this role since April 2016, and previously served as Senior Vice President, Amazon Web Services, from April 2006 until April 2016. (page 5)"
+  },
+  {
+    "id": "q07",
+    "type": "risk",
+    "top1_score": 0.564,
+    "pages": [
+      9,
+      14
+    ],
+    "hit3": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "# Risks Related to Government Contracts\n\nAccording to page 14 (Item 1A), the company lists the following risks related to government contracts:\n\n1. **Regulatory and Compliance Risks**: The company's contracts with U.S., state, local, and foreign government entities are subject to various procurement regulations and other requirements relating to their formation, administration, and performance.\n\n2. **Audit and Investigation Exposure**: The company is subject to audits and investigations relating to its government contracts.\n\n3. **Potential Penalties and Sanctions**: Violations could result in:\n   - Civil and criminal penalties\n   - Administrative sanctions\n   - Termination of contract\n   - Refunding or suspending of payments\n   - Forfeiture of profits\n   - Payment of fines\n   - Suspension or debarment from future government business\n\n4. **Termination Without Cause**: Some government contracts provide for termination by the government at any time, without cause."
+  },
+  {
+    "id": "q08",
+    "type": "out_of_scope",
+    "top1_score": 0.302,
+    "pages": [
+      3,
+      4,
+      18
+    ],
+    "hit3": null,
+    "grounded": null,
+    "correct": true,
+    "reply": "I cannot find the company's revenues for 2023 in the provided excerpts. The financial data included only covers the years 2015 through 2019 (page 18)."
+  },
+  {
+    "id": "q09",
+    "type": "out_of_scope",
+    "top1_score": 0.158,
+    "pages": [
+      5,
+      6,
+      18
+    ],
+    "hit3": null,
+    "grounded": null,
+    "correct": true,
+    "reply": "I cannot find information about the company's dividend policy for 2026 in the provided excerpts. The excerpts contain financial data from 2015-2019, information about executive leadership and the board of directors, and discussion of operating results fluctuations, but they do not include any information regarding dividend policy for 2026 or any future dividend plans."
+  },
+  {
+    "id": "q10",
+    "type": "fact",
+    "top1_score": 0.407,
+    "pages": [
+      3,
+      12,
+      17
+    ],
+    "hit3": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to the excerpts, the company's common stock is traded on the **Nasdaq Global Select Market** under the symbol \"AMZN\" (page 17)."
+  },
+  {
+    "id": "q11",
+    "type": "table_number",
+    "top1_score": 0.441,
+    "pages": [
+      3,
+      5,
+      18
+    ],
+    "hit3": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to the financial table on page 18, the company's net income in 2015 was $596 million."
+  },
+  {
+    "id": "q12",
+    "type": "table_number",
+    "top1_score": 0.471,
+    "pages": [
+      18
+    ],
+    "hit3": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to the financial table on page 18, the weighted-average diluted shares used in computation of earnings per share in 2017 were **493 million**."
+  }
+]

@@ -8,16 +8,16 @@ from app import config
 from app.bedrock import embed
 
 
-@lru_cache(maxsize=1)
-def _index():
-    vecs = np.load(config.index_path())["vectors"]
-    with open(config.chunks_path(), encoding="utf8") as f:
+@lru_cache(maxsize=2)
+def _index(version: str | None = None):
+    vecs = np.load(config.index_path(version))["vectors"]
+    with open(config.chunks_path(version), encoding="utf8") as f:
         chunks = [json.loads(line) for line in f]
     return vecs, chunks
 
 
-def search(query: str, k: int | None = None) -> list[dict]:
-    vecs, chunks = _index()
+def search(query: str, k: int | None = None, version: str | None = None) -> list[dict]:
+    vecs, chunks = _index(version)
     q = np.array(embed(query), dtype=np.float32)
     scores = vecs @ q
     top = np.argsort(-scores)[: (k or config.TOP_K)]

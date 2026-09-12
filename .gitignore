@@ -19,3 +19,4 @@ data/.embed_cache.json
 .terraform/
 *.tfstate.backup
 crash.log
+data/.narrate_cache.json

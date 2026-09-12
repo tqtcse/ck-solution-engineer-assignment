@@ -1,18 +1,18 @@
 - id: q01
   type: fact
-  question: "In which state was Amazon incorporated?"
+  question: "In which state was the company incorporated?"
   expected_answer_contains: ["Delaware"]
   expected_page: 3
 
 - id: q02
   type: list
-  question: "What are Amazon's three reportable segments?"
+  question: "What are the company's three reportable segments?"
   expected_answer_contains: ["North America", "International", "AWS"]
   expected_page: 3
 
 - id: q03
   type: table_number         
-  question: "What was Amazon's net sales in 2019?"
+  question: "What were the company's net sales in 2019?"
   expected_answer_contains: ["280,522"]
   expected_page: 18
 
@@ -30,28 +30,40 @@
 
 - id: q06
   type: person
-  question: "Who is the CEO of Amazon Web Services?"
+  question: "Who is the CEO of the AWS segment?"
   expected_answer_contains: ["Andrew", "Jassy"]
   expected_page: 5
 
 - id: q07
   type: risk
-  question: "What risks does Amazon list about government contracts?"
+  question: "What risks does the company list about government contracts?"
   expected_answer_contains: ["procurement", "penalties"]
   expected_page: 14
 
 - id: q08
   type: out_of_scope          
-  question: "What was Amazon's 2023 revenue?"
+  question: "What were the company's revenues in 2023?"
   must_refuse: true
 
 - id: q09
   type: out_of_scope
-  question: "What is Amazon's dividend policy for 2026?"
+  question: "What is the company's dividend policy for 2026?"
   must_refuse: true
 
 - id: q10
   type: fact
-  question: "On which exchange is Amazon common stock traded?"
+  question: "On which exchange is the company's common stock traded?"
   expected_answer_contains: ["Nasdaq"]
   expected_page: 17
+
+- id: q11
+  type: table_number
+  question: "What was the company's net income in 2015?"
+  expected_answer_contains: ["596"]
+  expected_page: 18
+
+- id: q12
+  type: table_number
+  question: "How many diluted shares were used to compute earnings per share in 2017?"
+  expected_answer_contains: ["493"]
+  expected_page: 18
