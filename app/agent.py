@@ -1,7 +1,8 @@
 import json
+import threading
 import time
 
-from app import config, memory
+from app import config, memory, obs, router
 from app.bedrock import client
 from app.session import SessionState
 from app.tools import TOOL_SPECS, run_tool
@@ -58,7 +59,19 @@ def _history(session_id: str) -> list[dict]:
     return out
 
 
-def _finish(state: SessionState, said: list[str], usage: dict, started: float):
+def _route_async(user_text: str, mid_verification: bool) -> dict:
+    box = {"label": "UNKNOWN", "by": "timeout"}
+
+    def work():
+        box["label"], box["by"] = router.route(user_text, mid_verification)
+
+    box["thread"] = threading.Thread(target=work, daemon=True)
+    box["thread"].start()
+    return box
+
+
+def _finish(state: SessionState, said: list[str], usage: dict, started: float,
+            routed: dict):
     memory.append_message(
         state.session_id, "assistant", "".join(said),
         model=config.CHAT_MODEL,
@@ -67,22 +80,35 @@ def _finish(state: SessionState, said: list[str], usage: dict, started: float):
         latency_ms=int((time.perf_counter() - started) * 1000),
     )
     state.save()
+    routed["thread"].join(timeout=2.0)
+    obs.log("routed", label=routed["label"], by=routed["by"])
+    obs.metric("LatencyMs", int((time.perf_counter() - started) * 1000), "Milliseconds")
+    if usage:
+        obs.metric("TokensIn", usage.get("inputTokens", 0))
+        obs.metric("TokensOut", usage.get("outputTokens", 0))
 
 
 def run_turn(state: SessionState, user_text: str):
+    routed = _route_async(user_text, bool(state.collected) and not state.verified)
     messages = _history(state.session_id)
     messages.append({"role": "user", "content": [{"text": user_text}]})
     memory.append_message(state.session_id, "user", user_text)
 
     started, said, usage = time.perf_counter(), [], {}
+    ttft = None
 
     for _ in range(MAX_STEPS):
         blocks = stop = None
         for kind, payload in _stream_once(messages):
             if kind == "__result__":
-                blocks, stop, usage = payload
-            else:
-                yield (kind, payload)
+                blocks, stop, step_usage = payload
+                for key in ("inputTokens", "outputTokens"):
+                    usage[key] = usage.get(key, 0) + step_usage.get(key, 0)
+                continue
+            if kind == "token" and ttft is None:
+                ttft = int((time.perf_counter() - started) * 1000)
+                obs.metric("TtftMs", ttft, "Milliseconds")
+            yield (kind, payload)
 
         content, calls = [], []
         for i in sorted(blocks):
@@ -103,14 +129,18 @@ def run_turn(state: SessionState, user_text: str):
         messages.append({"role": "assistant", "content": content})
 
         if stop != "tool_use":
-            _finish(state, said, usage, started)
+            _finish(state, said, usage, started, routed)
             yield ("done", None)
             return
 
         results = []
         for tool_id, name, args in calls:
             yield ("tool_start", name)
+            tool_started = time.perf_counter()
             out = run_tool(name, args, state)
+            obs.log("tool", name=name, args=args,
+                    status="error" if "error" in out else "ok",
+                    ms=int((time.perf_counter() - tool_started) * 1000))
             yield ("tool_end", name)
             results.append({
                 "toolResult": {
@@ -122,6 +152,6 @@ def run_turn(state: SessionState, user_text: str):
         state.save()
         messages.append({"role": "user", "content": results})
 
-    _finish(state, said, usage, started)
+    _finish(state, said, usage, started, routed)
     yield ("token", "\n(Maximum execution steps reached.)")
     yield ("done", None)
