@@ -48,6 +48,7 @@ from diagrams.onprem.client import User, Users
 from diagrams.onprem.iac import Terraform
 from diagrams.onprem.vcs import Github
 from diagrams.programming.framework import Fastapi
+from diagrams.generic.compute import Rack
 from diagrams.generic.storage import Storage
 from diagrams.programming.language import Python
 
@@ -125,9 +126,10 @@ with Diagram(
 
         with Cluster("AWS Lambda — container image, scale-to-zero", graph_attr=APP):
             fn = Lambda("Function URL\nAWS_IAM · RESPONSE_STREAM")
+            lwa = Rack("Lambda Web Adapter\n/opt/extensions · tiến trình riêng\nsự kiện Lambda → HTTP :8000")
 
-            with Cluster("Agent runtime", graph_attr=RUNTIME):
-                api = Fastapi("FastAPI + LWA\nSSE /chat/stream")
+            with Cluster("Agent runtime — code của app", graph_attr=RUNTIME):
+                api = Fastapi("FastAPI\nSSE /chat/stream")
                 agent = Python("Agent loop\ntool use · tối đa 6 bước")
                 tools = Python("Tools + GUARDRAIL\nkb_search · verify · orders")
                 router = Python("Router intent — THREAD\nngoài đường tới hạn\nluật → state → model")
@@ -156,7 +158,8 @@ with Diagram(
 
     users >> Edge(label="HTTPS + SSE\nx-amz-content-sha256", color=BLUE, penwidth="2.2") >> cdn
     cdn >> Edge(label="SigV4", color=BLUE, penwidth="2.2") >> fn
-    fn >> Edge(color=BLUE, penwidth="2.2") >> api
+    fn >> Edge(label="sự kiện invoke", color=BLUE, penwidth="2.2") >> lwa
+    lwa >> Edge(label="HTTP localhost:8000", color=BLUE, penwidth="2.2") >> api
 
     agent >> Edge(label="stream", color=PURPLE, penwidth="2.0") >> haiku
     tools >> Edge(label="embed", color=PURPLE) >> titan

@@ -35,13 +35,16 @@ Section 7 shows that this claim is tested, not just asserted.
 ```
 Browser ──HTTPS + SSE──► CloudFront + OAC ──SigV4──► Lambda Function URL
                                                       (AWS_IAM, RESPONSE_STREAM)
-                                                          │
+                                                          │  invoke event
                                     ┌─────────────────────┴──────────────────────┐
-                                    │  FastAPI + Lambda Web Adapter              │
-                                    │    agent loop  ──►  tools (GUARDRAIL)      │
-                                    │    router (separate thread)                │
-                                    └─────────────────────┬──────────────────────┘
-                                                          │
+                                    │  Lambda Web Adapter   (extension, own proc)│
+                                    │        │  plain HTTP to 127.0.0.1:8000     │
+                                    │  ┌─────┴──────────── app code ───────────┐ │
+                                    │  │ FastAPI → agent loop → tools (GUARD)  │ │
+                                    │  │ router  (separate thread, off path)   │ │
+                                    │  └─────┬────────────────────────────────-┘ │
+                                    └────────┼───────────────────────────────────┘
+                                             │
         Bedrock: Haiku 4.5 (chat) · Nova Lite (router) · Titan v2 (embeddings)
         In image: index_v2.npz + chunks · customers.json · orders.json
         DynamoDB: conversations (single table, GSI1, TTL)
