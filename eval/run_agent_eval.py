@@ -25,8 +25,12 @@ def drive(state, text: str) -> tuple[str, list[str], str]:
     return "".join(reply), tools, buf.getvalue()
 
 
-def check(turn: dict, reply: str, tools: list[str], events: list[str]) -> list[str]:
+def check(turn: dict, reply: str, tools: list[str], events: list[str],
+          routed: str | None) -> list[str]:
     low, fails = reply.lower(), []
+
+    if "routed" in turn and routed != turn["routed"]:
+        fails.append(f"router said {routed!r}, expected {turn['routed']!r}")
 
     missing = [t for t in turn.get("tools", []) if t not in tools]
     if missing:
@@ -71,7 +75,9 @@ def run_case(case: dict) -> dict:
         reply, tools, logs = drive(state, turn["say"])
         records = [json.loads(ln) for ln in logs.splitlines() if ln.startswith("{")]
         events = [r["event"] for r in records if "event" in r]
-        fails = check(turn, reply, tools, events)
+        routed = next((r["label"] for r in records if r.get("event") == "routed"), None)
+        routed_by = next((r["by"] for r in records if r.get("event") == "routed"), None)
+        fails = check(turn, reply, tools, events, routed)
         passed = passed and not fails
 
         turns.append({
@@ -82,12 +88,15 @@ def run_case(case: dict) -> dict:
             "fails": fails,
             "ms": int((time.perf_counter() - started) * 1000),
             "events": events,
+            "routed": routed,
+            "routed_by": routed_by,
             "logs": records,
         })
 
         mark = "OK" if not fails else "!!"
         print(f"  [{mark}] turn {i}  {turn['say'][:52]!r}")
-        print(f"        tools={tools or '-'}  {turns[-1]['ms']}ms")
+        print(f"        tools={tools or '-'}  routed={routed}/{routed_by}  "
+              f"{turns[-1]['ms']}ms")
         for f in fails:
             print(f"        FAIL: {f}")
 
@@ -95,29 +104,51 @@ def run_case(case: dict) -> dict:
             "session_id": sid, "passed": passed, "turns": turns}
 
 
+def stability(runs: list[list[dict]]) -> None:
+    n = len(runs)
+    print(f"\nPer-turn pass rate over {n} runs")
+    print("| scenario | turn | passed | rate |")
+    print("|---|---|---|---|")
+    for i, case in enumerate(runs[0]):
+        for j in range(len(case["turns"])):
+            hits = sum(1 for run in runs if not run[i]["turns"][j]["fails"])
+            flag = {n: "", 0: "   <- fails every run"}.get(hits, "   <- FLAKY")
+            print(f"| {case['id']} | {j + 1} | {hits}/{n} | {hits / n:.0%}{flag} |")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--case", help="run one scenario by id")
+    ap.add_argument("--repeat", type=int, default=1,
+                    help="run the whole set N times and report per-turn pass rate")
     args = ap.parse_args()
 
     cases = yaml.safe_load(CASES.read_text(encoding="utf8"))
     if args.case:
         cases = [c for c in cases if c["id"] == args.case]
 
-    started = time.time()
-    rows = [run_case(c) for c in cases]
+    started, runs = time.time(), []
+    for r in range(args.repeat):
+        if args.repeat > 1:
+            print(f"\n{'#' * 26} run {r + 1}/{args.repeat}")
+        runs.append([run_case(c) for c in cases])
 
     path = OUT / "results_agent.json"
-    path.write_text(json.dumps(rows, indent=2, ensure_ascii=False), encoding="utf8")
+    path.write_text(json.dumps(runs[0] if args.repeat == 1 else runs,
+                               indent=2, ensure_ascii=False), encoding="utf8")
 
-    ok = sum(1 for r in rows if r["passed"])
-    turns = sum(len(r["turns"]) for r in rows)
-    bad = sum(1 for r in rows for t in r["turns"] if t["fails"])
-    print(f"\n{ok}/{len(rows)} scenarios, {turns - bad}/{turns} turns, "
+    if args.repeat > 1:
+        stability(runs)
+
+    ok = sum(1 for run in runs for r in run if r["passed"])
+    turns = sum(len(r["turns"]) for run in runs for r in run)
+    bad = sum(1 for run in runs for r in run for t in r["turns"] if t["fails"])
+    print(f"\n{ok}/{len(cases) * args.repeat} scenarios, {turns - bad}/{turns} turns, "
           f"{time.time() - started:.1f}s -> {path.name}")
-    for r in rows:
-        if not r["passed"]:
-            print(f"  FAILED {r['id']} {r['name']}")
+    for run in runs:
+        for r in run:
+            if not r["passed"]:
+                print(f"  FAILED {r['id']} {r['name']}")
 
 
 if __name__ == "__main__":

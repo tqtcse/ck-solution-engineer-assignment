@@ -67,3 +67,155 @@
   question: "How many diluted shares were used to compute earnings per share in 2017?"
   expected_answer_contains: ["493"]
   expected_page: 18
+
+- id: q13
+  type: fact
+  question: "How many full-time and part-time employees did the company have at the end of 2019?"
+  expected_answer_contains: ["798,000"]
+  expected_page: 4
+
+- id: q14
+  type: fact
+  question: "How many shareholders of record were there as of January 22, 2020?"
+  expected_answer_contains: ["3,169"]
+  expected_page: 17
+
+- id: q15
+  type: fact
+  question: "What is the company's IRS Employer Identification Number?"
+  expected_answer_contains: ["91-1646860"]
+  expected_page: 1
+
+- id: q16
+  type: fact
+  question: "How many shares of common stock were outstanding as of January 22, 2020?"
+  expected_answer_contains: ["497,810,444"]
+  expected_page: 1
+
+- id: q17
+  type: fact
+  question: "What is the company's commission file number?"
+  expected_answer_contains: ["000-22513"]
+  expected_page: 1
+
+- id: q18
+  type: person
+  question: "Who is the Chief Financial Officer?"
+  expected_answer_contains: ["Olsavsky"]
+  expected_page: 5
+
+- id: q19
+  type: person
+  question: "Who is the CEO of Worldwide Consumer?"
+  expected_answer_contains: ["Wilke"]
+  expected_page: 5
+
+- id: q20
+  type: fact
+  question: "How many items does the Prime membership include unlimited free shipping on?"
+  expected_answer_contains: ["100 million"]
+  expected_page: 3
+
+- id: q21
+  type: fact
+  question: "What percentage of annual revenue was recognized in the fourth quarter of 2017?"
+  expected_answer_contains: ["34%"]
+  expected_page: 4
+
+- id: q22
+  type: list
+  question: "What service does the company offer to independent authors and publishers?"
+  expected_answer_contains: ["Kindle Direct Publishing"]
+  expected_page: 4
+
+- id: q23
+  type: risk
+  question: "What does the A2Z Guarantee do for buyers?"
+  expected_answer_contains: ["reimburse"]
+  expected_page: 15
+
+- id: q24
+  type: risk
+  question: "Which regulator opened an investigation into the company's operations with marketplace sellers?"
+  expected_answer_contains: ["European Commission"]
+  expected_page: 12
+
+- id: q25
+  type: table_number
+  question: "What was the total owned square footage as of December 31, 2019?"
+  expected_answer_contains: ["15,615"]
+  expected_page: 16
+
+- id: q26
+  type: table_number
+  question: "How much leased square footage did the AWS segment have?"
+  expected_answer_contains: ["10,553"]
+  expected_page: 16
+
+- id: q27
+  type: table_number
+  question: "How many North America physical stores were there as of December 31, 2019?"
+  expected_answer_contains: ["564"]
+  expected_page: 16
+
+- id: q28
+  type: table_number
+  question: "What were total assets at the end of 2019?"
+  expected_answer_contains: ["225,248"]
+  expected_page: 18
+
+- id: q29
+  type: table_number
+  question: "What was net cash provided by operating activities in 2019?"
+  expected_answer_contains: ["38,514"]
+  expected_page: 18
+
+- id: q30
+  type: table_number
+  question: "What was diluted earnings per share in 2019?"
+  expected_answer_contains: ["23.01"]
+  expected_page: 18
+
+- id: q31
+  type: table_number
+  question: "What were total long-term obligations at the end of 2017?"
+  expected_answer_contains: ["45,718"]
+  expected_page: 18
+
+- id: q32
+  type: table_number
+  question: "What was operating income in 2019?"
+  expected_answer_contains: ["14,541"]
+  expected_page: 18
+
+- id: q33
+  type: table_number
+  question: "How many basic weighted-average shares were used to compute earnings per share in 2015?"
+  expected_answer_contains: ["467"]
+  expected_page: 18
+
+- id: q34
+  type: table_multi
+  question: "Compare net income in 2018 versus 2019."
+  expected_answer_contains: ["10,073", "11,588"]
+  expected_page: 18
+
+- id: q35
+  type: out_of_scope
+  question: "What was AWS segment revenue in 2019?"
+  must_refuse: true
+
+- id: q36
+  type: out_of_scope
+  question: "How many employees did the company have at the end of 2022?"
+  must_refuse: true
+
+- id: q37
+  type: out_of_scope
+  question: "What is the company's net-zero carbon target date?"
+  must_refuse: true
+
+- id: q38
+  type: out_of_scope
+  question: "What were the company's technology and content expenses in 2019?"
+  must_refuse: true

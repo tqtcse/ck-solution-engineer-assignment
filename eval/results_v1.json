@@ -8,6 +8,7 @@
       12
     ],
     "hit3": true,
+    "evidence": true,
     "correct": true,
     "grounded": true,
     "reply": "According to the excerpt on page 3, Amazon.com, Inc. was incorporated in 1994 in the state of Washington and reincorporated in 1996 in the state of Delaware."
@@ -21,6 +22,7 @@
       16
     ],
     "hit3": true,
+    "evidence": true,
     "correct": true,
     "grounded": true,
     "reply": "According to page 3, the company's three reportable segments are:\n\n1. **North America**\n2. **International**\n3. **Amazon Web Services (\"AWS\")**\n\nThe excerpt states: \"We have organized our operations into three segments: North America, International, and Amazon Web Services (\"AWS\"). These segments reflect the way the Company evaluates its business performance and manages its operations.\""
@@ -34,6 +36,7 @@
       18
     ],
     "hit3": true,
+    "evidence": true,
     "correct": true,
     "grounded": true,
     "reply": "According to the Selected Consolidated Financial Data table on page 18, the company's net sales in 2019 were **$280,522 million**."
@@ -47,6 +50,7 @@
       18
     ],
     "hit3": true,
+    "evidence": true,
     "correct": true,
     "grounded": true,
     "reply": "According to the properties table on page 16, the total leased square footage as of December 31, 2019 was **318,171 thousand square feet**.\n\nThis figure represents the combined leased space across all facility types and locations:\n- North America office space: 18,051\n- International office space: 15,863\n- North America physical stores: 20,072\n- North America fulfillment, data centers, and other: 187,148\n- International fulfillment, data centers, and other: 76,868\n\n(Note: The footnote indicates this excludes sub-leased space.)"
@@ -59,6 +63,7 @@
       18
     ],
     "hit3": true,
+    "evidence": true,
     "correct": true,
     "grounded": true,
     "reply": "# Operating Income Comparison: 2017 vs 2018\n\nAccording to the Selected Consolidated Financial Data table (page 18):\n\n- **2017 Operating Income:** $4,106 million\n- **2018 Operating Income:** $12,421 million\n\nOperating income increased by **$8,315 million** (or approximately 202%) from 2017 to 2018.\n\nIt's worth noting that the Whole Foods Market acquisition occurred on August 28, 2017, so the 2017 results only include Whole Foods' operations from that date forward, while 2018 represents a full year of combined operations."
@@ -71,6 +76,7 @@
       5
     ],
     "hit3": true,
+    "evidence": true,
     "correct": true,
     "grounded": true,
     "reply": "According to the excerpt on page 5, Andrew R. Jassy is the CEO Amazon Web Services. The document states: \"Andrew R. Jassy. Mr. Jassy has served as CEO Amazon Web Services since April 2016.\""
@@ -84,6 +90,7 @@
       14
     ],
     "hit3": true,
+    "evidence": true,
     "correct": true,
     "grounded": true,
     "reply": "# Risks Related to Government Contracts\n\nAccording to page 14, the company lists the following risks related to government contracts:\n\n1. **Regulatory and Compliance Risks**: The company's contracts with U.S., state, local, and foreign government entities are subject to various procurement regulations and other requirements relating to their formation, administration, and performance.\n\n2. **Audit and Investigation Exposure**: The company is subject to audits and investigations relating to its government contracts.\n\n3. **Penalties and Sanctions for Violations**: Any violations could result in:\n   - Civil and criminal penalties\n   - Administrative sanctions\n   - Termination of contract\n   - Refunding or suspending of payments\n   - Forfeiture of profits\n   - Payment of fines\n   - Suspension or debarment from future government business\n\n4. **Termination Without Cause**: Some of these contracts provide for termination by the government at any time, without cause."
@@ -98,6 +105,7 @@
       18
     ],
     "hit3": null,
+    "evidence": null,
     "grounded": null,
     "correct": true,
     "reply": "I cannot find the company's revenues for 2023 in the provided excerpts. The excerpts only contain financial data through 2019, with the latest revenue figure shown being $280,522 million for the year ended December 31, 2019 (page 18)."
@@ -112,6 +120,7 @@
       18
     ],
     "hit3": null,
+    "evidence": null,
     "grounded": null,
     "correct": true,
     "reply": "I cannot find information about the company's dividend policy for 2026 in the provided excerpts. The excerpts discuss operational matters, board composition, accounting policies, and cash flow timing, but do not contain any information regarding dividend policies or plans for 2026."
@@ -126,6 +135,7 @@
       17
     ],
     "hit3": true,
+    "evidence": true,
     "correct": true,
     "grounded": true,
     "reply": "According to the excerpts, the company's common stock is traded on the **Nasdaq Global Select Market** under the symbol \"AMZN\" (page 17 and page 3)."
@@ -139,6 +149,7 @@
       18
     ],
     "hit3": true,
+    "evidence": false,
     "correct": false,
     "grounded": true,
     "reply": "According to the Selected Consolidated Financial Data table on page 18, the company's net income in 2015 was not disclosed in the excerpts provided. The table shows a blank entry for 2015 net income (loss), with the first reported net income figure being $2,371 million in 2016."
@@ -151,8 +162,373 @@
       18
     ],
     "hit3": true,
+    "evidence": false,
     "correct": false,
     "grounded": true,
     "reply": "I cannot find the number of diluted shares used to compute earnings per share in 2017 in the provided excerpts. While page 18 shows a table with \"Weighted-average shares used in computation of earnings per share: Diluted\" as a line item, the actual numerical values for the diluted shares are not included in the excerpts provided."
+  },
+  {
+    "id": "q13",
+    "type": "fact",
+    "top1_score": 0.406,
+    "pages": [
+      4,
+      16
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to page 4, the company employed approximately **798,000 full-time and part-time employees as of December 31, 2019**."
+  },
+  {
+    "id": "q14",
+    "type": "fact",
+    "top1_score": 0.611,
+    "pages": [
+      1,
+      17
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to the document, as of January 22, 2020, there were **3,169 shareholders of record** of Amazon's common stock. (page 17)"
+  },
+  {
+    "id": "q15",
+    "type": "fact",
+    "top1_score": 0.183,
+    "pages": [
+      1,
+      5
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to page 1 of the 10-K filing, Amazon.com, Inc.'s IRS Employer Identification Number is **91-1646860**."
+  },
+  {
+    "id": "q16",
+    "type": "fact",
+    "top1_score": 0.766,
+    "pages": [
+      1,
+      17
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to the document, as of January 22, 2020, there were **497,810,444** shares of common stock outstanding (page 1)."
+  },
+  {
+    "id": "q17",
+    "type": "fact",
+    "top1_score": 0.305,
+    "pages": [
+      1,
+      2,
+      17
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to page 1 of the 10-K filing, Amazon.com, Inc.'s Commission File No. is **000-22513**."
+  },
+  {
+    "id": "q18",
+    "type": "person",
+    "top1_score": 0.234,
+    "pages": [
+      2,
+      5
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to page 5, **Brian T. Olsavsky** is the Senior Vice President and Chief Financial Officer. He has served in this role since June 2015."
+  },
+  {
+    "id": "q19",
+    "type": "person",
+    "top1_score": 0.522,
+    "pages": [
+      5
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to the excerpts, **Jeffrey A. Wilke** is the CEO Worldwide Consumer. He has served in this role since April 2016 (page 5)."
+  },
+  {
+    "id": "q20",
+    "type": "fact",
+    "top1_score": 0.466,
+    "pages": [
+      3,
+      8
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to page 3, Amazon Prime includes unlimited free shipping on over 100 million items."
+  },
+  {
+    "id": "q21",
+    "type": "fact",
+    "top1_score": 0.276,
+    "pages": [
+      3,
+      4
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to page 4, Amazon recognized **34%** of its annual revenue during the fourth quarter of 2017."
+  },
+  {
+    "id": "q22",
+    "type": "list",
+    "top1_score": 0.519,
+    "pages": [
+      3,
+      4
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to page 4, the company offers **Kindle Direct Publishing**, which is described as \"an online service that lets independent authors and publishers choose a royalty option and make their books available in the Kindle Store.\" The company also operates Amazon Publishing, its own publishing arm, to serve authors and independent publishers."
+  },
+  {
+    "id": "q23",
+    "type": "risk",
+    "top1_score": 0.597,
+    "pages": [
+      3,
+      14,
+      15
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to page 15, under the A2Z Guarantee, Amazon \"reimburse[s] buyers for payments up to certain limits\" in situations where policies and processes are circumvented or fail to operate sufficiently, such as when buyers don't receive products they ordered or when products received are materially different from sellers' descriptions."
+  },
+  {
+    "id": "q24",
+    "type": "risk",
+    "top1_score": 0.476,
+    "pages": [
+      12,
+      14,
+      17
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to page 12, the **European Commission** opened an investigation to assess whether aspects of the company's operations with marketplace sellers violate EU competition rules."
+  },
+  {
+    "id": "q25",
+    "type": "table_number",
+    "top1_score": 0.555,
+    "pages": [
+      1,
+      16
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to the table on page 16, the total owned square footage as of December 31, 2019 was **15,615 thousand square feet** (or 15,615,000 square feet).\n\nThis figure represents the sum of owned square footage across all facility types and locations:\n- North America office space: 4,961\n- International office space: 1,831\n- North America fulfillment, data centers, and other: 5,591\n- International fulfillment, data centers, and other: 2,570\n- Physical stores had no owned square footage"
+  },
+  {
+    "id": "q26",
+    "type": "table_number",
+    "top1_score": 0.609,
+    "pages": [
+      3,
+      16
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to the excerpt on page 16, the AWS segment had **10,553 thousand square feet** of leased square footage as of December 31, 2019."
+  },
+  {
+    "id": "q27",
+    "type": "table_number",
+    "top1_score": 0.407,
+    "pages": [
+      4,
+      16
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to page 16, there were **564 North America physical stores** as of December 31, 2019."
+  },
+  {
+    "id": "q28",
+    "type": "table_number",
+    "top1_score": 0.285,
+    "pages": [
+      16,
+      18
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to the Balance Sheets data provided in the 10-K filing, total assets at the end of 2019 (December 31, 2019) were **$225,248 million** (page 18)."
+  },
+  {
+    "id": "q29",
+    "type": "table_number",
+    "top1_score": 0.427,
+    "pages": [
+      18
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to the Selected Consolidated Financial Data table on page 18, net cash provided by operating activities in 2019 was $38,514 million."
+  },
+  {
+    "id": "q30",
+    "type": "table_number",
+    "top1_score": 0.319,
+    "pages": [
+      2,
+      18
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to the selected consolidated financial data on page 18, the diluted earnings per share in 2019 was $23.01."
+  },
+  {
+    "id": "q31",
+    "type": "table_number",
+    "top1_score": 0.26,
+    "pages": [
+      9,
+      13,
+      18
+    ],
+    "hit3": true,
+    "evidence": false,
+    "correct": false,
+    "grounded": false,
+    "reply": "I cannot find information about total long-term obligations at the end of 2017 in the provided excerpts. The excerpts discuss accounting policy changes, tax liabilities, and operating cycles, but do not contain specific figures for long-term obligations as of December 31, 2017.\n\nTo find this information, you would need to refer to the company's balance sheet or debt schedule in Item 8 of Part II, \"Financial Statements and Supplementary Data\" of the 10-K filing."
+  },
+  {
+    "id": "q32",
+    "type": "table_number",
+    "top1_score": 0.329,
+    "pages": [
+      18
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "According to the Selected Consolidated Financial Data table on page 18, operating income in 2019 was $14,541 million."
+  },
+  {
+    "id": "q33",
+    "type": "table_number",
+    "top1_score": 0.304,
+    "pages": [
+      18
+    ],
+    "hit3": true,
+    "evidence": false,
+    "correct": false,
+    "grounded": true,
+    "reply": "I cannot find the weighted-average shares used to compute basic earnings per share in 2015 in the provided excerpts. While page 18 shows a section titled \"Weighted-average shares used in computation of earnings per share: Basic\" and \"Diluted,\" the actual numerical values for 2015 are not included in the excerpts provided."
+  },
+  {
+    "id": "q34",
+    "type": "table_multi",
+    "top1_score": 0.254,
+    "pages": [
+      2,
+      18
+    ],
+    "hit3": true,
+    "evidence": true,
+    "correct": true,
+    "grounded": true,
+    "reply": "Based on the Selected Consolidated Financial Data provided (page 18):\n\n- **2018 Net income:** $10,073 million\n- **2019 Net income:** $11,588 million\n\nNet income increased by $1,515 million from 2018 to 2019, representing approximately a 15% increase year-over-year."
+  },
+  {
+    "id": "q35",
+    "type": "out_of_scope",
+    "top1_score": 0.484,
+    "pages": [
+      3,
+      16
+    ],
+    "hit3": null,
+    "evidence": null,
+    "grounded": null,
+    "correct": true,
+    "reply": "I cannot find AWS segment revenue for 2019 in the provided excerpts. While the excerpts mention that AWS is one of Amazon's three segments and describe the services it offers, they do not contain specific revenue figures for AWS in 2019. The excerpts reference that information on net sales is contained in Item 8 of Part II, \"Financial Statements,\" but those financial statements are not included in the provided excerpts."
+  },
+  {
+    "id": "q36",
+    "type": "out_of_scope",
+    "top1_score": 0.414,
+    "pages": [
+      4,
+      16
+    ],
+    "hit3": null,
+    "evidence": null,
+    "grounded": null,
+    "correct": true,
+    "reply": "I cannot find information about the number of employees at the end of 2022 in the provided excerpts. The excerpts only contain employee data as of December 31, 2019, which shows approximately 798,000 full-time and part-time employees (page 4)."
+  },
+  {
+    "id": "q37",
+    "type": "out_of_scope",
+    "top1_score": 0.148,
+    "pages": [
+      3,
+      5
+    ],
+    "hit3": null,
+    "evidence": null,
+    "grounded": null,
+    "correct": true,
+    "reply": "I cannot find the company's net-zero carbon target date in the provided excerpts. The excerpts focus on business description, corporate structure, and board of directors information, but do not contain information about carbon or environmental targets."
+  },
+  {
+    "id": "q38",
+    "type": "out_of_scope",
+    "top1_score": 0.452,
+    "pages": [
+      7,
+      12
+    ],
+    "hit3": null,
+    "evidence": null,
+    "grounded": null,
+    "correct": true,
+    "reply": "I cannot find the company's technology and content expenses for 2019 in the provided excerpts. The excerpts only mention that the company invests in \"technology and content, fulfillment, and other expense categories\" as a factor affecting financial results, but they do not provide specific expense amounts or figures for 2019."
   }
 ]

@@ -31,7 +31,9 @@ TOOL_SPECS = [
             "name": "submit_verification",
             "description": "Submit customer identity verification details. Call this as soon as the customer "
                            "provides ANY of the three items, one at a time. The server accumulates them and "
-                           "replies with what is still needed. Pass verbatim user input.",
+                           "replies with what is still needed. Pass verbatim user input. Call it for every "
+                           "value the customer gives, including any you believe is invalid or in the wrong "
+                           "format: validation happens here, and a value you never submit is never recorded.",
             "inputSchema": {
                 "json": {
                     "type": "object",

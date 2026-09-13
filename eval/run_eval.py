@@ -45,6 +45,11 @@ def is_refusal(question: str, reply: str) -> bool:
     return verdict.strip().upper().startswith("YES")
 
 
+def evidence(case: dict, hits: list[dict]) -> bool:
+    context = " ".join(h["text"] for h in hits).lower()
+    return all(s.lower() in context for s in case["expected_answer_contains"])
+
+
 def grade(case: dict, hits: list[dict], reply: str) -> dict:
     row = {
         "id": case["id"],
@@ -54,11 +59,13 @@ def grade(case: dict, hits: list[dict], reply: str) -> dict:
     }
     if case.get("must_refuse"):
         row["hit3"] = None
+        row["evidence"] = None
         row["grounded"] = None
         row["correct"] = is_refusal(case["question"], reply)
     else:
         low = reply.lower()
         row["hit3"] = case["expected_page"] in row["pages"]
+        row["evidence"] = evidence(case, hits)
         row["correct"] = all(s.lower() in low for s in case["expected_answer_contains"])
         row["grounded"] = f"page {case['expected_page']}" in low
     return row
@@ -75,12 +82,14 @@ def run(version: str, retrieval_only: bool) -> list[dict]:
             "top1_score": round(hits[0]["score"], 3) if hits else 0.0,
             "pages": sorted({h["page"] for h in hits}),
             "hit3": None if case.get("must_refuse") else case["expected_page"] in {h["page"] for h in hits},
+            "evidence": None if case.get("must_refuse") else evidence(case, hits),
             "correct": None, "grounded": None,
         }
         row["reply"] = reply
         rows.append(row)
         mark = {True: "OK", False: "..", None: "--"}[row["hit3"]]
-        print(f"  [{mark}] {row['id']} {row['type']:<14} top1={row['top1_score']:.3f}")
+        ev = {True: "E", False: "-", None: " "}[row["evidence"]]
+        print(f"  [{mark}{ev}] {row['id']} {row['type']:<14} top1={row['top1_score']:.3f}")
     return rows
 
 

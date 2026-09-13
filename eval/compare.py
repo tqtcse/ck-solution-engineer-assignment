@@ -34,14 +34,16 @@ def summary_table(v1: dict, v2: dict) -> list[str]:
         buckets[group][0].append(row)
         buckets[group][1].append(v2[qid])
 
-    out = ["| Group | n | hit@3 v1 | hit@3 v2 | correct v1 | correct v2 | grounded v1 | grounded v2 |",
-           "|---|---|---|---|---|---|---|---|"]
+    out = ["| Group | n | hit@3 v1 | hit@3 v2 | evidence v1 | evidence v2 "
+           "| correct v1 | correct v2 | grounded v1 | grounded v2 |",
+           "|---|---|---|---|---|---|---|---|---|---|"]
     for group in ("prose", "table", "out of scope"):
         if group not in buckets:
             continue
         a, b = buckets[group]
         out.append(
             f"| {group} | {len(a)} | {rate(a, 'hit3')} | {rate(b, 'hit3')} "
+            f"| {rate(a, 'evidence')} | {rate(b, 'evidence')} "
             f"| {rate(a, 'correct')} | {rate(b, 'correct')} "
             f"| {rate(a, 'grounded')} | {rate(b, 'grounded')} |"
         )

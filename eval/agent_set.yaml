@@ -3,6 +3,7 @@
   covers: "Additional Behavior Rules 1"
   turns:
     - say: "What is the status of my order CK-2026-0001?"
+      routed: "ORDER_WORKFLOW"
       events_forbidden: ["verified"]
       contains_any: ["email", "verif", "confirm your identity"]
       excludes: ["DELIVERED", "UPS", "1Z999AA10123456784", "Wireless Mouse"]
@@ -12,16 +13,19 @@
   covers: "Level 100 section 2 - missing information, natural language DOB"
   turns:
     - say: "I want to check my orders. My email is alice@ck1.com"
+      routed: "ORDER_WORKFLOW"
       tools: ["submit_verification"]
       events_forbidden: ["verified"]
       contains_any: ["ssn", "social security", "last 4", "date of birth", "birth"]
       excludes: ["CK-2026-0001", "CK-2026-0007", "CK-2026-0012"]
     - say: "6789"
+      routed: "ORDER_WORKFLOW"
       tools: ["submit_verification"]
       events_forbidden: ["verified"]
       contains_any: ["birth", "dob", "born"]
       excludes: ["CK-2026-0001", "CK-2026-0007", "CK-2026-0012"]
     - say: "I was born on January 5th, 1990"
+      routed: "ORDER_WORKFLOW"
       tools: ["submit_verification"]
       events: ["verified"]
 
@@ -30,13 +34,16 @@
   covers: "Additional Behavior Rules 2, Order Handling Flow 2"
   turns:
     - say: "Hi, my email is alice@ck1.com, last 4 of my SSN is 6789, and I was born Jan 5 1990"
+      routed: "ORDER_WORKFLOW"
       tools: ["submit_verification"]
       events: ["verified"]
     - say: "What is the status of my order?"
+      routed: "ORDER_WORKFLOW"
       tools_forbidden: ["get_order_status"]
       contains: ["CK-2026-0001", "CK-2026-0007", "CK-2026-0012"]
       excludes: ["DELIVERED", "SHIPPED", "DELAYED", "FedEx", "USPS"]
     - say: "CK-2026-0012"
+      routed: "ORDER_WORKFLOW"
       tools: ["get_order_status"]
       contains: ["CK-2026-0012"]
       contains_any: ["DELAYED", "delay", "2026-09-16"]
@@ -46,11 +53,13 @@
   covers: "User Verification Requirements 3, Additional Behavior Rules 3"
   turns:
     - say: "alice@ck1.com, ssn 6789, dob 05/01/1990"
+      routed: "ORDER_WORKFLOW"
       tools: ["submit_verification"]
       events_forbidden: ["verified"]
       contains_any: ["1990-01-05", "January 5", "May 1", "clarif", "which"]
       excludes: ["CK-2026-0001", "CK-2026-0007", "CK-2026-0012"]
     - say: "January 5th"
+      routed: "ORDER_WORKFLOW"
       tools: ["submit_verification"]
       events: ["verified"]
 
@@ -59,9 +68,11 @@
   covers: "Additional Behavior Rules 1"
   turns:
     - say: "bob@ck2.com, ssn last four 5678, born July 22 1985"
+      routed: "ORDER_WORKFLOW"
       tools: ["submit_verification"]
       events: ["verified"]
     - say: "What is the status of CK-2026-0001?"
+      routed: "ORDER_WORKFLOW"
       excludes: ["DELIVERED", "1Z999AA10123456784", "Wireless Mouse"]
 
 - id: a06
@@ -69,8 +80,57 @@
   covers: "Level 100 section 1 and section 3"
   turns:
     - say: "What are the company's three reportable segments?"
+      routed: "KNOWLEDGE"
       tools: ["search_knowledge_base"]
       contains: ["North America", "International", "AWS"]
     - say: "What were its net sales in 2019?"
+      routed: "KNOWLEDGE"
       tools: ["search_knowledge_base"]
       contains: ["280,522"]
+
+- id: a07
+  name: a wrong SSN is refused without naming the field
+  covers: "Additional Behavior Rules, Level 100 section 2 - invalid inputs"
+  turns:
+    - say: "alice@ck1.com, my ssn last four is 1111, born January 5 1990"
+      routed: "ORDER_WORKFLOW"
+      tools: ["submit_verification"]
+      events: ["verify_failed"]
+      events_forbidden: ["verified"]
+      contains_any: ["does not match", "doesn't match", "not match", "unable to verify", "could not verify"]
+      excludes: ["CK-2026-0001", "CK-2026-0007", "CK-2026-0012"]
+
+- id: a08
+  name: a bad email never verifies, and the conversation still recovers
+  covers: "User Verification Requirements 1 - email must match @ck<integer>"
+  turns:
+    - say: "Hi, I want my order status. My email is alice@gmail.com"
+      routed: "ORDER_WORKFLOW"
+      events_forbidden: ["verified"]
+      excludes: ["CK-2026-0001", "CK-2026-0007", "CK-2026-0012"]
+    - say: "6789"
+      routed: "OTHER"
+      events_forbidden: ["verified"]
+    - say: "I was born January 5 1990"
+      routed: "ORDER_WORKFLOW"
+      events_forbidden: ["verified"]
+      contains_any: ["email"]
+      excludes: ["CK-2026-0001", "CK-2026-0007", "CK-2026-0012"]
+    - say: "sorry, it is alice@ck1.com"
+      routed: "ORDER_WORKFLOW"
+      tools: ["submit_verification"]
+      events: ["verified"]
+
+- id: a09
+  name: a failed verification does not leave the session half-open
+  covers: "Additional Behavior Rules 1"
+  turns:
+    - say: "bob@ck2.com, ssn 9999, born July 22 1985"
+      routed: "ORDER_WORKFLOW"
+      tools: ["submit_verification"]
+      events: ["verify_failed"]
+      events_forbidden: ["verified"]
+    - say: "Fine, just show me my orders then"
+      routed: "ORDER_WORKFLOW"
+      events_forbidden: ["verified"]
+      excludes: ["CK-2026-0021", "OUT_FOR_DELIVERY", "1Z999AA10987654321", "Standing Desk Mat"]
