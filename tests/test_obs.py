@@ -40,9 +40,18 @@ def test_leaves_non_strings_alone():
     assert out == {"page": 18, "score": 0.54, "hit": True, "note": None}
 
 
-def test_memory_and_obs_share_one_implementation():
+def test_conversation_store_keeps_what_the_agent_needs_next_turn():
+    import inspect
+
     from app import memory
-    assert memory.redact is redact
+
+    source = inspect.getsource(memory.append_message)
+    assert "redact" not in source, (
+        "Redacting message content destroys the context the agent reads back on the "
+        "next turn: the customer's email becomes ***@***, a bare SSN becomes ****, "
+        "and a clarifying question about a date becomes unanswerable. Redaction "
+        "belongs to obs.log and obs.metric, not to the conversation store."
+    )
 
 
 def test_masks_bare_four_digits_even_when_it_is_a_year():

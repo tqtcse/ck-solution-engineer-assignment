@@ -6,7 +6,6 @@ import boto3
 from boto3.dynamodb.conditions import Key
 
 from app import config
-from app.obs import redact
 
 TTL_DAYS = 30
 
@@ -26,7 +25,7 @@ def append_message(session_id: str, role: str, content: str, **meta) -> None:
         "pk": f"SESS#{session_id}",
         "sk": f"MSG#{now_ms:013d}#{uuid.uuid4().hex[:6]}",
         "role": role,
-        "content": redact(content),
+        "content": content,
         "created_at": now_ms,
         "expires_at": _expires_at(),
     }

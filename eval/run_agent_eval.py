@@ -25,7 +25,7 @@ def drive(state, text: str) -> tuple[str, list[str], str]:
     return "".join(reply), tools, buf.getvalue()
 
 
-def check(turn: dict, reply: str, tools: list[str]) -> list[str]:
+def check(turn: dict, reply: str, tools: list[str], events: list[str]) -> list[str]:
     low, fails = reply.lower(), []
 
     missing = [t for t in turn.get("tools", []) if t not in tools]
@@ -44,6 +44,14 @@ def check(turn: dict, reply: str, tools: list[str]) -> list[str]:
         if s.lower() in low:
             fails.append(f"LEAKED {s!r}")
 
+    for e in turn.get("events", []):
+        if e not in events:
+            fails.append(f"observability never logged {e!r}, only {events or 'nothing'}")
+
+    for e in turn.get("events_forbidden", []):
+        if e in events:
+            fails.append(f"observability logged {e!r} and must not have")
+
     any_of = turn.get("contains_any")
     if any_of and not any(s.lower() in low for s in any_of):
         fails.append(f"none of {any_of}")
@@ -61,7 +69,9 @@ def run_case(case: dict) -> dict:
         state = session.get(sid)
         started = time.perf_counter()
         reply, tools, logs = drive(state, turn["say"])
-        fails = check(turn, reply, tools)
+        records = [json.loads(ln) for ln in logs.splitlines() if ln.startswith("{")]
+        events = [r["event"] for r in records if "event" in r]
+        fails = check(turn, reply, tools, events)
         passed = passed and not fails
 
         turns.append({
@@ -71,7 +81,8 @@ def run_case(case: dict) -> dict:
             "tools": tools,
             "fails": fails,
             "ms": int((time.perf_counter() - started) * 1000),
-            "logs": [json.loads(ln) for ln in logs.splitlines() if ln.startswith("{")],
+            "events": events,
+            "logs": records,
         })
 
         mark = "OK" if not fails else "!!"

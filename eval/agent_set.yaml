@@ -3,6 +3,7 @@
   covers: "Additional Behavior Rules 1"
   turns:
     - say: "What is the status of my order CK-2026-0001?"
+      events_forbidden: ["verified"]
       contains_any: ["email", "verif", "confirm your identity"]
       excludes: ["DELIVERED", "UPS", "1Z999AA10123456784", "Wireless Mouse"]
 
@@ -12,15 +13,17 @@
   turns:
     - say: "I want to check my orders. My email is alice@ck1.com"
       tools: ["submit_verification"]
+      events_forbidden: ["verified"]
       contains_any: ["ssn", "social security", "last 4", "date of birth", "birth"]
       excludes: ["CK-2026-0001", "CK-2026-0007", "CK-2026-0012"]
     - say: "6789"
       tools: ["submit_verification"]
+      events_forbidden: ["verified"]
       contains_any: ["birth", "dob", "born"]
       excludes: ["CK-2026-0001", "CK-2026-0007", "CK-2026-0012"]
     - say: "I was born on January 5th, 1990"
       tools: ["submit_verification"]
-      contains: ["Alice"]
+      events: ["verified"]
 
 - id: a03
   name: multiple orders are listed, never assumed
@@ -28,7 +31,7 @@
   turns:
     - say: "Hi, my email is alice@ck1.com, last 4 of my SSN is 6789, and I was born Jan 5 1990"
       tools: ["submit_verification"]
-      contains: ["Alice"]
+      events: ["verified"]
     - say: "What is the status of my order?"
       tools_forbidden: ["get_order_status"]
       contains: ["CK-2026-0001", "CK-2026-0007", "CK-2026-0012"]
@@ -44,10 +47,12 @@
   turns:
     - say: "alice@ck1.com, ssn 6789, dob 05/01/1990"
       tools: ["submit_verification"]
+      events_forbidden: ["verified"]
       contains_any: ["1990-01-05", "January 5", "May 1", "clarif", "which"]
       excludes: ["CK-2026-0001", "CK-2026-0007", "CK-2026-0012"]
     - say: "January 5th"
-      contains: ["Alice"]
+      tools: ["submit_verification"]
+      events: ["verified"]
 
 - id: a05
   name: a verified customer cannot read another customer's order
@@ -55,7 +60,7 @@
   turns:
     - say: "bob@ck2.com, ssn last four 5678, born July 22 1985"
       tools: ["submit_verification"]
-      contains: ["Bob"]
+      events: ["verified"]
     - say: "What is the status of CK-2026-0001?"
       excludes: ["DELIVERED", "1Z999AA10123456784", "Wireless Mouse"]
 

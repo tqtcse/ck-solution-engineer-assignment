@@ -1,13 +1,13 @@
 # Kết quả eval mức agent
 
-Golden set 12 câu ở `results.md` đo **retrieval + sinh câu trả lời**. Nó không chạm
-vào agent: `run_eval.py` chỉ import `retrieval` và `bedrock.client`, rồi tự dựng một
-system prompt riêng. Router, vòng lặp tool, system prompt thật, lịch sử hội thoại,
-streaming — không có thứ nào được đo.
+Golden set 12 câu ở `results.md` đo **retrieval + sinh câu trả lời**. Nó không chạm vào
+agent: `run_eval.py` chỉ import `retrieval` và `bedrock.client`, rồi tự dựng một system
+prompt riêng. Router, vòng lặp tool, system prompt thật, lịch sử hội thoại, streaming —
+không có thứ nào được đo.
 
-Bộ này chạy **xuyên `agent.run_turn()`**, tức đúng đường mà request thật đi qua, kể cả
+Bộ này chạy **xuyên `agent.run_turn()`**, đúng đường mà request thật đi qua, kể cả
 DynamoDB: mỗi lượt gọi lại `session.get(sid)` nên trạng thái phải đi qua vòng đọc/ghi
-thật, không giữ trong RAM.
+thật chứ không giữ trong RAM.
 
 ```
 python -m eval.run_agent_eval             # cả 6 kịch bản
@@ -25,90 +25,114 @@ python -m eval.run_agent_eval --case a03  # một kịch bản
 | a05 | Khách đã xác minh không đọc được đơn của khách khác | Additional Behavior Rules 1 |
 | a06 | Hội thoại nhiều lượt có đại từ hồi chỉ | Level 100 §1 và §3 |
 
-## Bốn loại assertion
+## Sáu loại assertion
 
 | Khoá | Nghĩa |
 |---|---|
 | `tools` | Các tool này **phải** được gọi. Gọi thêm tool khác không tính là trượt |
 | `tools_forbidden` | Các tool này **không được** gọi |
+| `events` | Sự kiện obs này **phải** được ghi trong lượt |
+| `events_forbidden` | Sự kiện obs này **không được** ghi |
 | `contains` / `excludes` | Mọi chuỗi phải có / không chuỗi nào được có |
 | `contains_any` | Ít nhất một chuỗi phải có |
 
 `tools` cố ý là **tập con** chứ không phải khớp chính xác. Ở a03 lượt 1 agent gọi
-`submit_verification` rồi `list_orders` ngay trong một lượt — đó là hành vi đúng, không
-phải lỗi. Bản assertion đầu tiên dùng khớp chính xác và báo trượt 4 lượt tốt; đã sửa.
+`submit_verification` rồi `list_orders` ngay trong một lượt — hành vi đúng, không phải
+lỗi. Bản assertion đầu tiên dùng khớp chính xác và báo trượt 4 lượt tốt; đã sửa.
 
-`excludes` là assertion an toàn, `tools_forbidden` là assertion hành vi. Ở a03 lượt 2
-`tools_forbidden: [get_order_status]` mã hoá đúng câu *"must not assume which order the
-user wants"* — agent được phép trả lời từ ngữ cảnh, nhưng không được tự chọn một đơn.
+`events` lấy thẳng từ lớp observability làm **oracle**. Bản đầu kiểm tra xác minh thành
+công bằng cách tìm chữ `"Alice"` trong câu trả lời — đó là lời chào, thứ trang trí, đề
+không đòi. Có lượt xác minh **đã thành công** mà model không chào tên, vẫn bị báo trượt.
+`events: ["verified"]` đọc đúng sự kiện `obs.log("verified", customer_id=...)` nên độc lập
+hoàn toàn với cách model diễn đạt. Đây cũng là lý do thực dụng để có observability: nó
+làm được việc kiểm chứng mà khớp chuỗi không làm được.
 
 ## Kết quả — 12/09/2026
 
-**4/6 kịch bản, 9/13 lượt.** Hai kịch bản trượt là **lỗi thật**, đã lặp lại y hệt ở hai
-lần chạy độc lập.
+**6/6 kịch bản, 13/13 lượt.** Lần chạy đầu là **4/6, 9/13**, và hai kịch bản trượt là lỗi
+thật, lặp lại y hệt ở hai lần chạy độc lập.
 
-### Lỗi 1 — email bị nuốt, xác minh không bao giờ xong (a02)
+## Lỗi bộ eval này tìm ra: redact xoá trắng lịch sử hội thoại
 
-Khi khách đưa **từng trường một**, lượt đầu agent **không gọi** `submit_verification`:
+Triệu chứng — khách đưa **từng trường một** thì xác minh không bao giờ xong:
 
 ```
 USER : I want to check my orders. My email is alice@ck1.com
-AGENT: Thank you for providing your email. ... Could you please provide the
-       last 4 digits of your Social Security Number?
-tools: []
-```
-
-Email không bao giờ tới server, `state.collected` vẫn rỗng. Hậu quả dây chuyền:
-
-```
 USER : 6789
-AGENT: I still need two more pieces... Could you please provide your
-       corporate email address?          <- hỏi lại thứ khách vừa đưa
+AGENT: I need your complete email address to proceed.      <- hỏi lại thứ vừa đưa
 USER : I was born on January 5th, 1990
-AGENT: I still need your corporate email address to complete the verification.
+AGENT: I still need your corporate email address.
 ```
 
-Khách đã đưa đủ cả ba trường mà vẫn kẹt. Mô tả tool ghi rõ *"Call this as soon as the
-customer provides ANY of the three items, one at a time"* — model bỏ qua ở lượt 1.
-
-Kịch bản a03 đưa cả ba trường **trong một câu** thì xác minh xong ngay. Nên lỗi chỉ lộ
-ra ở đường đi từng-trường-một, và đề yêu cầu đúng đường đó: *"Missing information (ask
-follow-up questions)"*.
-
-### Lỗi 2 — hỏi lại ngày sinh nhập nhằng rồi từ chối chính câu trả lời (a04)
-
-Server xử lý nhập nhằng đúng:
+Và ở a04, agent tự hỏi rồi từ chối chính câu trả lời của khách:
 
 ```
-USER : alice@ck1.com, ssn 6789, dob 05/01/1990
 AGENT: is that January 5, 1990, or May 1, 1990?
-```
-
-Nhưng khách trả lời tự nhiên thì bị chặn:
-
-```
 USER : January 5th
-AGENT: I need the full date including the year.
-LOG  : verify_failed reason=unparseable attempts=1
+AGENT: I need the complete date of birth including the year.
 ```
 
-Agent tự hỏi "January 5 hay May 1?" rồi từ chối "January 5th". Năm **1990 đang nằm sẵn
-trong ngữ cảnh** — model chỉ cần gửi lại đủ ngày. Đề nói thẳng: *"handle flexible DOB
-input gracefully (no strict format enforcement)"*.
+Hai lần sửa system prompt đều **không ăn thua**. Nguyên nhân nằm chỗ khác hẳn. Đọc thẳng
+cái đang nằm trong DynamoDB:
 
-### Vì sao 95 unit test không thấy hai lỗi này
+```
+user     : I want to check my orders. My email is ***@***
+user     : ****
+user     : I was born on ****-**-**
+assistant: You provided ****-**-**, which could be interpreted as either ****
+```
+
+`memory.append_message` gọi `redact(content)` trước khi ghi. Nên `alice@ck1.com` thành
+`***@***`, `6789` thành `****`, và **câu hỏi làm rõ của chính agent** cũng bị xoá. Lượt
+sau model đọc lại lịch sử thì không còn gì để đọc. Nó hỏi *"what year were you born?"* —
+**phản ứng hợp lý với ngữ cảnh đã bị huỷ**, không phải model kém.
+
+### Vì sao thiết kế cũ không tự nhất quán
+
+`update_session` ghi `collected` — chứa đúng email, SSN, ngày sinh đó — **không redact**.
+Cùng một bảng, cùng một phiên: message text bị xoá sạch còn item `META` giữ nguyên bản rõ.
+Redact không bảo vệ được gì, chỉ phá ngữ cảnh.
+
+### Quyết định
+
+Redact thuộc về **mặt phẳng quan sát**, không thuộc về **kho hội thoại**:
+
+- `obs.log` / `obs.metric` → vẫn redact toàn bộ. CloudWatch là nơi nhiều người đọc nhất.
+- `memory.append_message` → lưu nguyên văn. Bảng hội thoại là kho dữ liệu nghiệp vụ của
+  một hệ thống chăm sóc khách hàng; nó **phải** chứa được nội dung khách đã nói. Có TTL
+  30 ngày và mã hoá lúc nghỉ.
+
+Đây là cách tách chuẩn: cơ sở dữ liệu ứng dụng chứa PII, log thì không.
+
+`tests/test_obs.py::test_conversation_store_keeps_what_the_agent_needs_next_turn` khoá
+lại quyết định này để không ai vô tình bật redact lại.
+
+### Hai sửa đổi, mỗi cái chữa một phần
+
+| Sửa | Chữa được |
+|---|---|
+| Bỏ `redact` khỏi `append_message` | a04 toàn bộ, a02 lượt 2 và 3 |
+| Đảo luật gọi tool lên trước luật "hỏi từng cái một" trong system prompt | a02 lượt 1 |
+
+Trước khi đảo, model nói *"I have one more piece to collect"* khi mới có email — đếm sai
+vì **chưa bao giờ gọi tool nên chưa từng thấy `still_needed`**. Prompt giờ ghi rõ: chưa
+gọi tool thì không được nói cho khách còn thiếu bao nhiêu.
+
+### Vì sao 95 unit test không thấy
 
 `test_tools.py` gọi thẳng `_submit_verification` và luôn truyền đúng tham số, nên nó đo
-**server có gom trường đúng không** — có. Cái không ai đo là **model có chịu gửi trường
-đó đi không**. Lỗi nằm ở quyết định của model, chỉ lộ ra khi chạy thật.
+**server có gom trường đúng không** — có. Cái không ai đo là **model còn đọc được gì ở
+lượt sau**. Lỗi nằm giữa hai module đều có test riêng và đều xanh.
 
 ## Còn lại gì chưa giải quyết
 
-- **Chi phí thật.** 13 lượt ≈ 65s và vài chục lệnh gọi Bedrock, nên bộ này **không nằm
-  trong CI** — giống `run_eval.py`. Chạy tay trước khi đổi system prompt hoặc mô tả tool.
+- **Chi phí thật.** 13 lượt ≈ 67s và vài chục lệnh gọi Bedrock, nên bộ này **không nằm
+  trong CI** — giống `run_eval.py`. Chạy tay trước khi đổi system prompt, mô tả tool, hoặc
+  bất cứ thứ gì chạm vào `memory`.
 - **Ghi vào bảng DynamoDB thật**, session id tiền tố `eval-`, TTL 30 ngày tự dọn.
-- **Chưa đo lại nhiều lần để lấy tỉ lệ.** Mỗi lượt chạy một lần; hai lỗi trên lặp lại ở
-  cả hai lần chạy nên chắc chắn, còn 9 lượt đạt thì chưa loại trừ được may mắn.
+- **Mỗi lượt chạy một lần.** Hai lỗi trên lặp lại ở hai lần chạy nên chắc chắn; còn 13/13
+  đạt thì chưa loại trừ được may mắn. Muốn có tỉ lệ thì phải chạy lặp nhiều lần.
 - **a05 chưa chạm vào guard.** Agent từ chối đơn của Alice bằng ngữ cảnh, không gọi tool,
-  nên nhánh `NOT_YOUR_ORDER` trong `_get_order_status` không được kích hoạt ở đây — nó
-  vẫn được phủ bởi `test_tools.py`.
+  nên nhánh `NOT_YOUR_ORDER` trong `_get_order_status` không được kích hoạt ở đây — nó vẫn
+  được phủ bởi `test_tools.py`.
+- **Chưa có kịch bản xác minh sai** (sai SSN, sai email) chạy xuyên agent; mới có ở unit test.

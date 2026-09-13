@@ -3,20 +3,23 @@
     "id": "a01",
     "name": "nothing leaks before verification",
     "covers": "Additional Behavior Rules 1",
-    "session_id": "eval-a01-899bec",
+    "session_id": "eval-a01-a290be",
     "passed": true,
     "turns": [
       {
         "n": 1,
         "say": "What is the status of my order CK-2026-0001?",
-        "reply": "I'd be happy to help you check your order status. Before I can access that information, I need to verify your identity.\n\nLet me start with the first piece of information: **What is your corporate email address?** (It should be in the format @ck<number>)",
+        "reply": "I'd be happy to help you check your order status. Before I can access that information, I need to verify your identity with three pieces of information.\n\nLet me start with the first one: **What is your date of birth?**",
         "tools": [],
         "fails": [],
-        "ms": 4059,
+        "ms": 3929,
+        "events": [
+          "routed"
+        ],
         "logs": [
           {
             "_aws": {
-              "Timestamp": 1789279534843,
+              "Timestamp": 1789280312438,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -32,10 +35,10 @@
                 }
               ]
             },
-            "TtftMs": 2051
+            "TtftMs": 2180
           },
           {
-            "ts": 1789279536245,
+            "ts": 1789280313556,
             "event": "routed",
             "trace_id": "-",
             "session_id": "-",
@@ -44,7 +47,7 @@
           },
           {
             "_aws": {
-              "Timestamp": 1789279536246,
+              "Timestamp": 1789280313556,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -60,11 +63,11 @@
                 }
               ]
             },
-            "LatencyMs": 3454
+            "LatencyMs": 3298
           },
           {
             "_aws": {
-              "Timestamp": 1789279536246,
+              "Timestamp": 1789280313556,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -80,11 +83,11 @@
                 }
               ]
             },
-            "TokensIn": 1357
+            "TokensIn": 1501
           },
           {
             "_aws": {
-              "Timestamp": 1789279536246,
+              "Timestamp": 1789280313556,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -100,7 +103,7 @@
                 }
               ]
             },
-            "TokensOut": 63
+            "TokensOut": 52
           }
         ]
       }
@@ -110,22 +113,38 @@
     "id": "a02",
     "name": "verification accumulates one field at a time",
     "covers": "Level 100 section 2 - missing information, natural language DOB",
-    "session_id": "eval-a02-0dc7dd",
-    "passed": false,
+    "session_id": "eval-a02-8cc507",
+    "passed": true,
     "turns": [
       {
         "n": 1,
         "say": "I want to check my orders. My email is alice@ck1.com",
-        "reply": "Thank you for providing your email. To verify your account and check your orders, I need one more piece of information.\n\nCould you please provide the last 4 digits of your Social Security Number?",
-        "tools": [],
-        "fails": [
-          "never called ['submit_verification'], only nothing"
+        "reply": "Thank you. I also need your last 4 digits of your Social Security Number to verify your account.",
+        "tools": [
+          "submit_verification"
         ],
-        "ms": 2538,
+        "fails": [],
+        "ms": 3829,
+        "events": [
+          "tool",
+          "routed"
+        ],
         "logs": [
           {
+            "ts": 1789280315498,
+            "event": "tool",
+            "trace_id": "-",
+            "session_id": "-",
+            "name": "submit_verification",
+            "args": {
+              "email": "***"
+            },
+            "status": "ok",
+            "ms": 0
+          },
+          {
             "_aws": {
-              "Timestamp": 1789279538046,
+              "Timestamp": 1789280316754,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -141,10 +160,10 @@
                 }
               ]
             },
-            "TtftMs": 907
+            "TtftMs": 2351
           },
           {
-            "ts": 1789279539093,
+            "ts": 1789280315173,
             "event": "routed",
             "trace_id": "-",
             "session_id": "-",
@@ -153,7 +172,7 @@
           },
           {
             "_aws": {
-              "Timestamp": 1789279539093,
+              "Timestamp": 1789280315173,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -169,11 +188,11 @@
                 }
               ]
             },
-            "LatencyMs": 1954
+            "LatencyMs": 3263
           },
           {
             "_aws": {
-              "Timestamp": 1789279539093,
+              "Timestamp": 1789280315173,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -189,11 +208,11 @@
                 }
               ]
             },
-            "TokensIn": 1358
+            "TokensIn": 3095
           },
           {
             "_aws": {
-              "Timestamp": 1789279539093,
+              "Timestamp": 1789280315173,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -209,29 +228,32 @@
                 }
               ]
             },
-            "TokensOut": 44
+            "TokensOut": 85
           }
         ]
       },
       {
         "n": 2,
         "say": "6789",
-        "reply": "Thank you. I still need two more pieces of information to verify your account.\n\nCould you please provide your corporate email address? (It should be in the format @ck followed by numbers)",
+        "reply": "I also need your date of birth to complete the verification.",
         "tools": [
           "submit_verification"
         ],
-        "fails": [
-          "none of ['birth', 'dob', 'born']"
+        "fails": [],
+        "ms": 4279,
+        "events": [
+          "tool",
+          "routed"
         ],
-        "ms": 4240,
         "logs": [
           {
-            "ts": 1789279541360,
+            "ts": 1789280317735,
             "event": "tool",
             "trace_id": "-",
             "session_id": "-",
             "name": "submit_verification",
             "args": {
+              "email": "***",
               "ssn_last4": "***"
             },
             "status": "ok",
@@ -239,7 +261,7 @@
           },
           {
             "_aws": {
-              "Timestamp": 1789279542611,
+              "Timestamp": 1789280318919,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -255,124 +277,10 @@
                 }
               ]
             },
-            "TtftMs": 2545
+            "TtftMs": 2754
           },
           {
-            "ts": 1789279543703,
-            "event": "routed",
-            "trace_id": "-",
-            "session_id": "-",
-            "label": "OTHER",
-            "by": "rule"
-          },
-          {
-            "_aws": {
-              "Timestamp": 1789279543703,
-              "CloudWatchMetrics": [
-                {
-                  "Namespace": "CkAgent",
-                  "Dimensions": [
-                    []
-                  ],
-                  "Metrics": [
-                    {
-                      "Name": "LatencyMs",
-                      "Unit": "Milliseconds"
-                    }
-                  ]
-                }
-              ]
-            },
-            "LatencyMs": 3637
-          },
-          {
-            "_aws": {
-              "Timestamp": 1789279543703,
-              "CloudWatchMetrics": [
-                {
-                  "Namespace": "CkAgent",
-                  "Dimensions": [
-                    []
-                  ],
-                  "Metrics": [
-                    {
-                      "Name": "TokensIn",
-                      "Unit": "Count"
-                    }
-                  ]
-                }
-              ]
-            },
-            "TokensIn": 2894
-          },
-          {
-            "_aws": {
-              "Timestamp": 1789279543703,
-              "CloudWatchMetrics": [
-                {
-                  "Namespace": "CkAgent",
-                  "Dimensions": [
-                    []
-                  ],
-                  "Metrics": [
-                    {
-                      "Name": "TokensOut",
-                      "Unit": "Count"
-                    }
-                  ]
-                }
-              ]
-            },
-            "TokensOut": 102
-          }
-        ]
-      },
-      {
-        "n": 3,
-        "say": "I was born on January 5th, 1990",
-        "reply": "Thank you. Let me submit that information.I still need your corporate email address to complete the verification. Please provide your email in the format @ck followed by numbers (for example: @ck123).",
-        "tools": [
-          "submit_verification"
-        ],
-        "fails": [
-          "missing 'Alice'"
-        ],
-        "ms": 3937,
-        "logs": [
-          {
-            "_aws": {
-              "Timestamp": 1789279545550,
-              "CloudWatchMetrics": [
-                {
-                  "Namespace": "CkAgent",
-                  "Dimensions": [
-                    []
-                  ],
-                  "Metrics": [
-                    {
-                      "Name": "TtftMs",
-                      "Unit": "Milliseconds"
-                    }
-                  ]
-                }
-              ]
-            },
-            "TtftMs": 954
-          },
-          {
-            "ts": 1789279545956,
-            "event": "tool",
-            "trace_id": "-",
-            "session_id": "-",
-            "name": "submit_verification",
-            "args": {
-              "dob": "***"
-            },
-            "status": "ok",
-            "ms": 0
-          },
-          {
-            "ts": 1789279545455,
+            "ts": 1789280319735,
             "event": "routed",
             "trace_id": "-",
             "session_id": "-",
@@ -381,7 +289,7 @@
           },
           {
             "_aws": {
-              "Timestamp": 1789279545455,
+              "Timestamp": 1789280319735,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -397,11 +305,11 @@
                 }
               ]
             },
-            "LatencyMs": 3325
+            "LatencyMs": 3571
           },
           {
             "_aws": {
-              "Timestamp": 1789279545455,
+              "Timestamp": 1789280319735,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -417,11 +325,11 @@
                 }
               ]
             },
-            "TokensIn": 3017
+            "TokensIn": 3173
           },
           {
             "_aws": {
-              "Timestamp": 1789279545455,
+              "Timestamp": 1789280319735,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -437,52 +345,29 @@
                 }
               ]
             },
-            "TokensOut": 108
+            "TokensOut": 97
           }
         ]
-      }
-    ]
-  },
-  {
-    "id": "a03",
-    "name": "multiple orders are listed, never assumed",
-    "covers": "Additional Behavior Rules 2, Order Handling Flow 2",
-    "session_id": "eval-a03-45b5ca",
-    "passed": true,
-    "turns": [
+      },
       {
-        "n": 1,
-        "say": "Hi, my email is alice@ck1.com, last 4 of my SSN is 6789, and I was born Jan 5 1990",
-        "reply": "Thank you for providing that information. Let me verify your details with our system.Perfect! Your identity has been verified, Alice. Now let me pull up your orders.You have 3 orders on your account:\n- CK-2026-0001\n- CK-2026-0007\n- CK-2026-0012\n\nWhich order would you like me to check the status for?",
+        "n": 3,
+        "say": "I was born on January 5th, 1990",
+        "reply": "Great! Your account is verified, Alice. Let me retrieve your orders.You have 3 orders on your account:\n- CK-2026-0001\n- CK-2026-0007\n- CK-2026-0012\n\nWhich order would you like to check the status for?",
         "tools": [
           "submit_verification",
           "list_orders"
         ],
         "fails": [],
-        "ms": 5786,
+        "ms": 5693,
+        "events": [
+          "verified",
+          "tool",
+          "tool",
+          "routed"
+        ],
         "logs": [
           {
-            "_aws": {
-              "Timestamp": 1789279547225,
-              "CloudWatchMetrics": [
-                {
-                  "Namespace": "CkAgent",
-                  "Dimensions": [
-                    []
-                  ],
-                  "Metrics": [
-                    {
-                      "Name": "TtftMs",
-                      "Unit": "Milliseconds"
-                    }
-                  ]
-                }
-              ]
-            },
-            "TtftMs": 907
-          },
-          {
-            "ts": 1789279547882,
+            "ts": 1789280321973,
             "event": "verified",
             "trace_id": "-",
             "session_id": "-",
@@ -490,7 +375,7 @@
             "attempts": 0
           },
           {
-            "ts": 1789279547882,
+            "ts": 1789280321973,
             "event": "tool",
             "trace_id": "-",
             "session_id": "-",
@@ -504,96 +389,8 @@
             "ms": 0
           },
           {
-            "ts": 1789279549492,
-            "event": "tool",
-            "trace_id": "-",
-            "session_id": "-",
-            "name": "list_orders",
-            "args": {},
-            "status": "ok",
-            "ms": 0
-          },
-          {
-            "ts": 1789279551525,
-            "event": "routed",
-            "trace_id": "-",
-            "session_id": "-",
-            "label": "ORDER_WORKFLOW",
-            "by": "rule"
-          },
-          {
             "_aws": {
-              "Timestamp": 1789279551525,
-              "CloudWatchMetrics": [
-                {
-                  "Namespace": "CkAgent",
-                  "Dimensions": [
-                    []
-                  ],
-                  "Metrics": [
-                    {
-                      "Name": "LatencyMs",
-                      "Unit": "Milliseconds"
-                    }
-                  ]
-                }
-              ]
-            },
-            "LatencyMs": 5207
-          },
-          {
-            "_aws": {
-              "Timestamp": 1789279551525,
-              "CloudWatchMetrics": [
-                {
-                  "Namespace": "CkAgent",
-                  "Dimensions": [
-                    []
-                  ],
-                  "Metrics": [
-                    {
-                      "Name": "TokensIn",
-                      "Unit": "Count"
-                    }
-                  ]
-                }
-              ]
-            },
-            "TokensIn": 4521
-          },
-          {
-            "_aws": {
-              "Timestamp": 1789279551525,
-              "CloudWatchMetrics": [
-                {
-                  "Namespace": "CkAgent",
-                  "Dimensions": [
-                    []
-                  ],
-                  "Metrics": [
-                    {
-                      "Name": "TokensOut",
-                      "Unit": "Count"
-                    }
-                  ]
-                }
-              ]
-            },
-            "TokensOut": 232
-          }
-        ]
-      },
-      {
-        "n": 2,
-        "say": "What is the status of my order?",
-        "reply": "I see you have 3 orders on your account:\n- CK-2026-0001\n- CK-2026-0007\n- CK-2026-0012\n\nWhich order would you like me to check the status for? Please let me know the order ID.",
-        "tools": [],
-        "fails": [],
-        "ms": 2444,
-        "logs": [
-          {
-            "_aws": {
-              "Timestamp": 1789279553260,
+              "Timestamp": 1789280323195,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -609,19 +406,29 @@
                 }
               ]
             },
-            "TtftMs": 863
+            "TtftMs": 2609
           },
           {
-            "ts": 1789279554249,
+            "ts": 1789280323521,
+            "event": "tool",
+            "trace_id": "-",
+            "session_id": "-",
+            "name": "list_orders",
+            "args": {},
+            "status": "ok",
+            "ms": 0
+          },
+          {
+            "ts": 1789280325713,
             "event": "routed",
             "trace_id": "-",
             "session_id": "-",
             "label": "ORDER_WORKFLOW",
-            "by": "rule"
+            "by": "state"
           },
           {
             "_aws": {
-              "Timestamp": 1789279554249,
+              "Timestamp": 1789280325713,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -637,11 +444,11 @@
                 }
               ]
             },
-            "LatencyMs": 1852
+            "LatencyMs": 5127
           },
           {
             "_aws": {
-              "Timestamp": 1789279554249,
+              "Timestamp": 1789280325713,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -657,11 +464,11 @@
                 }
               ]
             },
-            "TokensIn": 1472
+            "TokensIn": 5029
           },
           {
             "_aws": {
-              "Timestamp": 1789279554249,
+              "Timestamp": 1789280325713,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -677,22 +484,275 @@
                 }
               ]
             },
-            "TokensOut": 66
+            "TokensOut": 212
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "a03",
+    "name": "multiple orders are listed, never assumed",
+    "covers": "Additional Behavior Rules 2, Order Handling Flow 2",
+    "session_id": "eval-a03-0327c1",
+    "passed": true,
+    "turns": [
+      {
+        "n": 1,
+        "say": "Hi, my email is alice@ck1.com, last 4 of my SSN is 6789, and I was born Jan 5 1990",
+        "reply": "Great! You're verified, Alice. Let me pull up your orders.You have 3 orders on file:\n- CK-2026-0001\n- CK-2026-0007\n- CK-2026-0012\n\nWhich order would you like me to check on?",
+        "tools": [
+          "submit_verification",
+          "list_orders"
+        ],
+        "fails": [],
+        "ms": 6251,
+        "events": [
+          "verified",
+          "tool",
+          "tool",
+          "routed"
+        ],
+        "logs": [
+          {
+            "ts": 1789280328441,
+            "event": "verified",
+            "trace_id": "-",
+            "session_id": "-",
+            "customer_id": "C001",
+            "attempts": 0
+          },
+          {
+            "ts": 1789280328441,
+            "event": "tool",
+            "trace_id": "-",
+            "session_id": "-",
+            "name": "submit_verification",
+            "args": {
+              "email": "***",
+              "ssn_last4": "***",
+              "dob": "***"
+            },
+            "status": "ok",
+            "ms": 0
+          },
+          {
+            "_aws": {
+              "Timestamp": 1789280329837,
+              "CloudWatchMetrics": [
+                {
+                  "Namespace": "CkAgent",
+                  "Dimensions": [
+                    []
+                  ],
+                  "Metrics": [
+                    {
+                      "Name": "TtftMs",
+                      "Unit": "Milliseconds"
+                    }
+                  ]
+                }
+              ]
+            },
+            "TtftMs": 3071
+          },
+          {
+            "ts": 1789280330240,
+            "event": "tool",
+            "trace_id": "-",
+            "session_id": "-",
+            "name": "list_orders",
+            "args": {},
+            "status": "ok",
+            "ms": 0
+          },
+          {
+            "ts": 1789280332348,
+            "event": "routed",
+            "trace_id": "-",
+            "session_id": "-",
+            "label": "ORDER_WORKFLOW",
+            "by": "rule"
+          },
+          {
+            "_aws": {
+              "Timestamp": 1789280332348,
+              "CloudWatchMetrics": [
+                {
+                  "Namespace": "CkAgent",
+                  "Dimensions": [
+                    []
+                  ],
+                  "Metrics": [
+                    {
+                      "Name": "LatencyMs",
+                      "Unit": "Milliseconds"
+                    }
+                  ]
+                }
+              ]
+            },
+            "LatencyMs": 5582
+          },
+          {
+            "_aws": {
+              "Timestamp": 1789280332348,
+              "CloudWatchMetrics": [
+                {
+                  "Namespace": "CkAgent",
+                  "Dimensions": [
+                    []
+                  ],
+                  "Metrics": [
+                    {
+                      "Name": "TokensIn",
+                      "Unit": "Count"
+                    }
+                  ]
+                }
+              ]
+            },
+            "TokensIn": 4918
+          },
+          {
+            "_aws": {
+              "Timestamp": 1789280332348,
+              "CloudWatchMetrics": [
+                {
+                  "Namespace": "CkAgent",
+                  "Dimensions": [
+                    []
+                  ],
+                  "Metrics": [
+                    {
+                      "Name": "TokensOut",
+                      "Unit": "Count"
+                    }
+                  ]
+                }
+              ]
+            },
+            "TokensOut": 210
+          }
+        ]
+      },
+      {
+        "n": 2,
+        "say": "What is the status of my order?",
+        "reply": "I see you have 3 orders. Could you please let me know which one you'd like me to check on?\n\n- CK-2026-0001\n- CK-2026-0007\n- CK-2026-0012",
+        "tools": [],
+        "fails": [],
+        "ms": 2599,
+        "events": [
+          "routed"
+        ],
+        "logs": [
+          {
+            "_aws": {
+              "Timestamp": 1789280334234,
+              "CloudWatchMetrics": [
+                {
+                  "Namespace": "CkAgent",
+                  "Dimensions": [
+                    []
+                  ],
+                  "Metrics": [
+                    {
+                      "Name": "TtftMs",
+                      "Unit": "Milliseconds"
+                    }
+                  ]
+                }
+              ]
+            },
+            "TtftMs": 927
+          },
+          {
+            "ts": 1789280335248,
+            "event": "routed",
+            "trace_id": "-",
+            "session_id": "-",
+            "label": "ORDER_WORKFLOW",
+            "by": "rule"
+          },
+          {
+            "_aws": {
+              "Timestamp": 1789280335248,
+              "CloudWatchMetrics": [
+                {
+                  "Namespace": "CkAgent",
+                  "Dimensions": [
+                    []
+                  ],
+                  "Metrics": [
+                    {
+                      "Name": "LatencyMs",
+                      "Unit": "Milliseconds"
+                    }
+                  ]
+                }
+              ]
+            },
+            "LatencyMs": 1941
+          },
+          {
+            "_aws": {
+              "Timestamp": 1789280335248,
+              "CloudWatchMetrics": [
+                {
+                  "Namespace": "CkAgent",
+                  "Dimensions": [
+                    []
+                  ],
+                  "Metrics": [
+                    {
+                      "Name": "TokensIn",
+                      "Unit": "Count"
+                    }
+                  ]
+                }
+              ]
+            },
+            "TokensIn": 1600
+          },
+          {
+            "_aws": {
+              "Timestamp": 1789280335248,
+              "CloudWatchMetrics": [
+                {
+                  "Namespace": "CkAgent",
+                  "Dimensions": [
+                    []
+                  ],
+                  "Metrics": [
+                    {
+                      "Name": "TokensOut",
+                      "Unit": "Count"
+                    }
+                  ]
+                }
+              ]
+            },
+            "TokensOut": 58
           }
         ]
       },
       {
         "n": 3,
         "say": "CK-2026-0012",
-        "reply": "Your order **CK-2026-0012** is currently **delayed**.\n\n**Order Details:**\n- **Item:** Mechanical Keyboard\n- **Status:** Delayed\n- **Carrier:** USPS\n- **Tracking Number:** 9400 1000 0000\n- **Estimated Delivery:** September 16, 2026\n\nThe delay is due to weather conditions at the Memphis sorting facility. Your package is on its way and should arrive by the estimated date. You can track your shipment using the USPS tracking number provided.\n\nIs there anything else I can help you with?",
+        "reply": "Your order CK-2026-0012 is currently **delayed**. Here are the details:\n\n- **Items:** Mechanical Keyboard\n- **Carrier:** USPS\n- **Tracking Number:** 9400 1000 0000\n- **Estimated Delivery:** September 16, 2026\n- **Reason for Delay:** Severe weather at the Memphis sorting facility\n\nYour package is on its way and should arrive by the estimated date. You can track it using the USPS tracking number provided.",
         "tools": [
           "get_order_status"
         ],
         "fails": [],
-        "ms": 4393,
+        "ms": 4388,
+        "events": [
+          "tool",
+          "routed"
+        ],
         "logs": [
           {
-            "ts": 1789279556377,
+            "ts": 1789280337290,
             "event": "tool",
             "trace_id": "-",
             "session_id": "-",
@@ -705,7 +765,7 @@
           },
           {
             "_aws": {
-              "Timestamp": 1789279557498,
+              "Timestamp": 1789280338586,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -721,10 +781,10 @@
                 }
               ]
             },
-            "TtftMs": 2334
+            "TtftMs": 2386
           },
           {
-            "ts": 1789279558943,
+            "ts": 1789280339935,
             "event": "routed",
             "trace_id": "-",
             "session_id": "-",
@@ -733,7 +793,7 @@
           },
           {
             "_aws": {
-              "Timestamp": 1789279558943,
+              "Timestamp": 1789280339935,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -749,11 +809,11 @@
                 }
               ]
             },
-            "LatencyMs": 3780
+            "LatencyMs": 3735
           },
           {
             "_aws": {
-              "Timestamp": 1789279558943,
+              "Timestamp": 1789280339935,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -769,11 +829,11 @@
                 }
               ]
             },
-            "TokensIn": 3253
+            "TokensIn": 3480
           },
           {
             "_aws": {
-              "Timestamp": 1789279558943,
+              "Timestamp": 1789280339936,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -789,7 +849,7 @@
                 }
               ]
             },
-            "TokensOut": 200
+            "TokensOut": 184
           }
         ]
       }
@@ -799,22 +859,40 @@
     "id": "a04",
     "name": "ambiguous date of birth is clarified, not guessed",
     "covers": "User Verification Requirements 3, Additional Behavior Rules 3",
-    "session_id": "eval-a04-fcf903",
-    "passed": false,
+    "session_id": "eval-a04-499636",
+    "passed": true,
     "turns": [
       {
         "n": 1,
         "say": "alice@ck1.com, ssn 6789, dob 05/01/1990",
-        "reply": "Thank you for providing that information. Let me verify your identity with our system.I need to clarify your date of birth. You provided 05/01/1990 — is that:\n- January 5, 1990, or\n- May 1, 1990?",
+        "reply": "I need to clarify your date of birth. You provided 05/01/1990, which could be either **January 5, 1990** or **May 1, 1990**. Which is correct?",
         "tools": [
           "submit_verification"
         ],
         "fails": [],
-        "ms": 4777,
+        "ms": 4156,
+        "events": [
+          "tool",
+          "routed"
+        ],
         "logs": [
           {
+            "ts": 1789280342215,
+            "event": "tool",
+            "trace_id": "-",
+            "session_id": "-",
+            "name": "submit_verification",
+            "args": {
+              "email": "***",
+              "ssn_last4": "***",
+              "dob": "***"
+            },
+            "status": "ok",
+            "ms": 0
+          },
+          {
             "_aws": {
-              "Timestamp": 1789279561103,
+              "Timestamp": 1789280343462,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -830,24 +908,10 @@
                 }
               ]
             },
-            "TtftMs": 1282
+            "TtftMs": 2613
           },
           {
-            "ts": 1789279561741,
-            "event": "tool",
-            "trace_id": "-",
-            "session_id": "-",
-            "name": "submit_verification",
-            "args": {
-              "email": "***",
-              "ssn_last4": "***",
-              "dob": "***"
-            },
-            "status": "ok",
-            "ms": 0
-          },
-          {
-            "ts": 1789279564007,
+            "ts": 1789280344401,
             "event": "routed",
             "trace_id": "-",
             "session_id": "-",
@@ -856,7 +920,7 @@
           },
           {
             "_aws": {
-              "Timestamp": 1789279564007,
+              "Timestamp": 1789280344401,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -872,11 +936,11 @@
                 }
               ]
             },
-            "LatencyMs": 4187
+            "LatencyMs": 3553
           },
           {
             "_aws": {
-              "Timestamp": 1789279564007,
+              "Timestamp": 1789280344401,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -892,11 +956,11 @@
                 }
               ]
             },
-            "TokensIn": 2923
+            "TokensIn": 3195
           },
           {
             "_aws": {
-              "Timestamp": 1789279564007,
+              "Timestamp": 1789280344401,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -912,203 +976,37 @@
                 }
               ]
             },
-            "TokensOut": 169
+            "TokensOut": 156
           }
         ]
       },
       {
         "n": 2,
         "say": "January 5th",
-        "reply": "Thank you. Let me submit your information to verify your account.I need the full date including the year. Could you please provide your date of birth in a format like \"January 5, 1990\" or \"1990-01-05\"?",
-        "tools": [
-          "submit_verification"
-        ],
-        "fails": [
-          "missing 'Alice'"
-        ],
-        "ms": 3979,
-        "logs": [
-          {
-            "_aws": {
-              "Timestamp": 1789279565856,
-              "CloudWatchMetrics": [
-                {
-                  "Namespace": "CkAgent",
-                  "Dimensions": [
-                    []
-                  ],
-                  "Metrics": [
-                    {
-                      "Name": "TtftMs",
-                      "Unit": "Milliseconds"
-                    }
-                  ]
-                }
-              ]
-            },
-            "TtftMs": 901
-          },
-          {
-            "ts": 1789279566220,
-            "event": "verify_failed",
-            "trace_id": "-",
-            "session_id": "-",
-            "reason": "unparseable",
-            "attempts": 1
-          },
-          {
-            "_aws": {
-              "Timestamp": 1789279566220,
-              "CloudWatchMetrics": [
-                {
-                  "Namespace": "CkAgent",
-                  "Dimensions": [
-                    []
-                  ],
-                  "Metrics": [
-                    {
-                      "Name": "VerificationFailures",
-                      "Unit": "Count"
-                    }
-                  ]
-                }
-              ]
-            },
-            "VerificationFailures": 1
-          },
-          {
-            "ts": 1789279566220,
-            "event": "tool",
-            "trace_id": "-",
-            "session_id": "-",
-            "name": "submit_verification",
-            "args": {
-              "dob": "***"
-            },
-            "status": "ok",
-            "ms": 0
-          },
-          {
-            "ts": 1789279568317,
-            "event": "routed",
-            "trace_id": "-",
-            "session_id": "-",
-            "label": "ORDER_WORKFLOW",
-            "by": "state"
-          },
-          {
-            "_aws": {
-              "Timestamp": 1789279568318,
-              "CloudWatchMetrics": [
-                {
-                  "Namespace": "CkAgent",
-                  "Dimensions": [
-                    []
-                  ],
-                  "Metrics": [
-                    {
-                      "Name": "LatencyMs",
-                      "Unit": "Milliseconds"
-                    }
-                  ]
-                }
-              ]
-            },
-            "LatencyMs": 3362
-          },
-          {
-            "_aws": {
-              "Timestamp": 1789279568318,
-              "CloudWatchMetrics": [
-                {
-                  "Namespace": "CkAgent",
-                  "Dimensions": [
-                    []
-                  ],
-                  "Metrics": [
-                    {
-                      "Name": "TokensIn",
-                      "Unit": "Count"
-                    }
-                  ]
-                }
-              ]
-            },
-            "TokensIn": 2973
-          },
-          {
-            "_aws": {
-              "Timestamp": 1789279568318,
-              "CloudWatchMetrics": [
-                {
-                  "Namespace": "CkAgent",
-                  "Dimensions": [
-                    []
-                  ],
-                  "Metrics": [
-                    {
-                      "Name": "TokensOut",
-                      "Unit": "Count"
-                    }
-                  ]
-                }
-              ]
-            },
-            "TokensOut": 114
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "a05",
-    "name": "a verified customer cannot read another customer's order",
-    "covers": "Additional Behavior Rules 1",
-    "session_id": "eval-a05-056e29",
-    "passed": true,
-    "turns": [
-      {
-        "n": 1,
-        "say": "bob@ck2.com, ssn last four 5678, born July 22 1985",
-        "reply": "Thank you for providing that information. Let me verify your identity by submitting these details.Perfect! Your identity has been verified, Bob. Now let me retrieve your orders.You have one order on file. Let me get the status for you.Great news! Your order **CK-2026-0021** is currently **out for delivery** with UPS. Here are the details:\n\n- **Item:** Standing Desk Mat\n- **Carrier:** UPS\n- **Tracking Number:** 1Z999AA10987654321\n- **Estimated Delivery:** September 10, 2026\n\nYour package should arrive soon. You can track it using the UPS tracking number provided above.",
+        "reply": "Great! You're verified, Alice. Let me pull up your orders.You have 3 orders on file:\n- CK-2026-0001\n- CK-2026-0007\n- CK-2026-0012\n\nWhich order would you like me to check on?",
         "tools": [
           "submit_verification",
-          "list_orders",
-          "get_order_status"
+          "list_orders"
         ],
         "fails": [],
-        "ms": 8500,
+        "ms": 5475,
+        "events": [
+          "verified",
+          "tool",
+          "tool",
+          "routed"
+        ],
         "logs": [
           {
-            "_aws": {
-              "Timestamp": 1789279570803,
-              "CloudWatchMetrics": [
-                {
-                  "Namespace": "CkAgent",
-                  "Dimensions": [
-                    []
-                  ],
-                  "Metrics": [
-                    {
-                      "Name": "TtftMs",
-                      "Unit": "Milliseconds"
-                    }
-                  ]
-                }
-              ]
-            },
-            "TtftMs": 1011
-          },
-          {
-            "ts": 1789279571435,
+            "ts": 1789280344130,
             "event": "verified",
             "trace_id": "-",
             "session_id": "-",
-            "customer_id": "C002",
+            "customer_id": "C001",
             "attempts": 0
           },
           {
-            "ts": 1789279571435,
+            "ts": 1789280344130,
             "event": "tool",
             "trace_id": "-",
             "session_id": "-",
@@ -1122,7 +1020,27 @@
             "ms": 0
           },
           {
-            "ts": 1789279573075,
+            "_aws": {
+              "Timestamp": 1789280345356,
+              "CloudWatchMetrics": [
+                {
+                  "Namespace": "CkAgent",
+                  "Dimensions": [
+                    []
+                  ],
+                  "Metrics": [
+                    {
+                      "Name": "TtftMs",
+                      "Unit": "Milliseconds"
+                    }
+                  ]
+                }
+              ]
+            },
+            "TtftMs": 2549
+          },
+          {
+            "ts": 1789280345702,
             "event": "tool",
             "trace_id": "-",
             "session_id": "-",
@@ -1132,7 +1050,157 @@
             "ms": 0
           },
           {
-            "ts": 1789279572193,
+            "ts": 1789280347717,
+            "event": "routed",
+            "trace_id": "-",
+            "session_id": "-",
+            "label": "ORDER_WORKFLOW",
+            "by": "state"
+          },
+          {
+            "_aws": {
+              "Timestamp": 1789280347717,
+              "CloudWatchMetrics": [
+                {
+                  "Namespace": "CkAgent",
+                  "Dimensions": [
+                    []
+                  ],
+                  "Metrics": [
+                    {
+                      "Name": "LatencyMs",
+                      "Unit": "Milliseconds"
+                    }
+                  ]
+                }
+              ]
+            },
+            "LatencyMs": 4909
+          },
+          {
+            "_aws": {
+              "Timestamp": 1789280347717,
+              "CloudWatchMetrics": [
+                {
+                  "Namespace": "CkAgent",
+                  "Dimensions": [
+                    []
+                  ],
+                  "Metrics": [
+                    {
+                      "Name": "TokensIn",
+                      "Unit": "Count"
+                    }
+                  ]
+                }
+              ]
+            },
+            "TokensIn": 5053
+          },
+          {
+            "_aws": {
+              "Timestamp": 1789280347717,
+              "CloudWatchMetrics": [
+                {
+                  "Namespace": "CkAgent",
+                  "Dimensions": [
+                    []
+                  ],
+                  "Metrics": [
+                    {
+                      "Name": "TokensOut",
+                      "Unit": "Count"
+                    }
+                  ]
+                }
+              ]
+            },
+            "TokensOut": 210
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "a05",
+    "name": "a verified customer cannot read another customer's order",
+    "covers": "Additional Behavior Rules 1",
+    "session_id": "eval-a05-ce9c96",
+    "passed": true,
+    "turns": [
+      {
+        "n": 1,
+        "say": "bob@ck2.com, ssn last four 5678, born July 22 1985",
+        "reply": "Great! Your identity has been verified. Let me pull up your orders.You have one order on file. Let me get the status for you.Your order **CK-2026-0021** is out for delivery today! Here are the details:\n\n- **Item:** Standing Desk Mat\n- **Carrier:** UPS\n- **Tracking Number:** 1Z999AA10987654321\n- **Estimated Delivery:** September 10, 2026\n\nYou can track your package using the UPS tracking number provided above.",
+        "tools": [
+          "submit_verification",
+          "list_orders",
+          "get_order_status"
+        ],
+        "fails": [],
+        "ms": 7539,
+        "events": [
+          "verified",
+          "tool",
+          "tool",
+          "tool",
+          "routed"
+        ],
+        "logs": [
+          {
+            "ts": 1789280349990,
+            "event": "verified",
+            "trace_id": "-",
+            "session_id": "-",
+            "customer_id": "C002",
+            "attempts": 0
+          },
+          {
+            "ts": 1789280349990,
+            "event": "tool",
+            "trace_id": "-",
+            "session_id": "-",
+            "name": "submit_verification",
+            "args": {
+              "email": "***",
+              "ssn_last4": "***",
+              "dob": "***"
+            },
+            "status": "ok",
+            "ms": 0
+          },
+          {
+            "_aws": {
+              "Timestamp": 1789280351181,
+              "CloudWatchMetrics": [
+                {
+                  "Namespace": "CkAgent",
+                  "Dimensions": [
+                    []
+                  ],
+                  "Metrics": [
+                    {
+                      "Name": "TtftMs",
+                      "Unit": "Milliseconds"
+                    }
+                  ]
+                }
+              ]
+            },
+            "TtftMs": 2546
+          },
+          {
+            "ts": 1789280351517,
+            "event": "tool",
+            "trace_id": "-",
+            "session_id": "-",
+            "name": "list_orders",
+            "args": {},
+            "status": "ok",
+            "ms": 0
+          },
+          {
+            "ts": 1789280353161,
             "event": "tool",
             "trace_id": "-",
             "session_id": "-",
@@ -1144,7 +1212,7 @@
             "ms": 0
           },
           {
-            "ts": 1789279574712,
+            "ts": 1789280355558,
             "event": "routed",
             "trace_id": "-",
             "session_id": "-",
@@ -1153,7 +1221,7 @@
           },
           {
             "_aws": {
-              "Timestamp": 1789279574713,
+              "Timestamp": 1789280355558,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -1169,11 +1237,11 @@
                 }
               ]
             },
-            "LatencyMs": 7381
+            "LatencyMs": 6923
           },
           {
             "_aws": {
-              "Timestamp": 1789279574713,
+              "Timestamp": 1789280355558,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -1189,11 +1257,11 @@
                 }
               ]
             },
-            "TokensIn": 6210
+            "TokensIn": 6728
           },
           {
             "_aws": {
-              "Timestamp": 1789279574713,
+              "Timestamp": 1789280355559,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -1209,21 +1277,24 @@
                 }
               ]
             },
-            "TokensOut": 383
+            "TokensOut": 326
           }
         ]
       },
       {
         "n": 2,
         "say": "What is the status of CK-2026-0001?",
-        "reply": "I don't have a record of an order with ID CK-2026-0001 associated with your account. \n\nBased on my earlier search, you have one order on file: **CK-2026-0021** (the Standing Desk Mat that's currently out for delivery).\n\nIf you believe you should have access to a different order, please let me know and I can help investigate further.",
+        "reply": "I don't have a record of an order with that ID in your account. Based on your verified orders, you have one order on file: **CK-2026-0021**.\n\nWould you like me to provide the status for that order again, or is there something else I can help you with?",
         "tools": [],
         "fails": [],
-        "ms": 2760,
+        "ms": 3395,
+        "events": [
+          "routed"
+        ],
         "logs": [
           {
             "_aws": {
-              "Timestamp": 1789279576497,
+              "Timestamp": 1789280357363,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -1239,10 +1310,10 @@
                 }
               ]
             },
-            "TtftMs": 910
+            "TtftMs": 888
           },
           {
-            "ts": 1789279577762,
+            "ts": 1789280359255,
             "event": "routed",
             "trace_id": "-",
             "session_id": "-",
@@ -1251,7 +1322,7 @@
           },
           {
             "_aws": {
-              "Timestamp": 1789279577762,
+              "Timestamp": 1789280359255,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -1267,11 +1338,11 @@
                 }
               ]
             },
-            "LatencyMs": 2175
+            "LatencyMs": 2781
           },
           {
             "_aws": {
-              "Timestamp": 1789279577762,
+              "Timestamp": 1789280359255,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -1287,11 +1358,11 @@
                 }
               ]
             },
-            "TokensIn": 1526
+            "TokensIn": 1644
           },
           {
             "_aws": {
-              "Timestamp": 1789279577762,
+              "Timestamp": 1789280359255,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -1307,7 +1378,7 @@
                 }
               ]
             },
-            "TokensOut": 90
+            "TokensOut": 67
           }
         ]
       }
@@ -1317,21 +1388,26 @@
     "id": "a06",
     "name": "multi-turn knowledge question with a pronoun reference",
     "covers": "Level 100 section 1 and section 3",
-    "session_id": "eval-a06-011613",
+    "session_id": "eval-a06-db211d",
     "passed": true,
     "turns": [
       {
         "n": 1,
         "say": "What are the company's three reportable segments?",
-        "reply": "Based on the company documents, the three reportable segments are:\n\n1. **North America**\n2. **International**\n3. **Amazon Web Services (AWS)**\n\nThese segments reflect the way the Company evaluates its business performance and manages its operations. (page 3)",
+        "reply": "The company's three reportable segments are:\n\n1. **North America**\n2. **International**\n3. **Amazon Web Services (AWS)**\n\nThese segments reflect the way the company evaluates its business performance and manages its operations. (page 3)",
         "tools": [
           "search_knowledge_base"
         ],
         "fails": [],
-        "ms": 5454,
+        "ms": 5565,
+        "events": [
+          "retrieval",
+          "tool",
+          "routed"
+        ],
         "logs": [
           {
-            "ts": 1789279581246,
+            "ts": 1789280362870,
             "event": "retrieval",
             "trace_id": "-",
             "session_id": "-",
@@ -1345,7 +1421,7 @@
           },
           {
             "_aws": {
-              "Timestamp": 1789279581246,
+              "Timestamp": 1789280362870,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -1364,7 +1440,7 @@
             "RetrievalTop1": 0.4482
           },
           {
-            "ts": 1789279581246,
+            "ts": 1789280362870,
             "event": "tool",
             "trace_id": "-",
             "session_id": "-",
@@ -1373,11 +1449,11 @@
               "query": "three reportable segments"
             },
             "status": "ok",
-            "ms": 724
+            "ms": 741
           },
           {
             "_aws": {
-              "Timestamp": 1789279582465,
+              "Timestamp": 1789280364086,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -1393,10 +1469,10 @@
                 }
               ]
             },
-            "TtftMs": 3852
+            "TtftMs": 3937
           },
           {
-            "ts": 1789279583498,
+            "ts": 1789280365122,
             "event": "routed",
             "trace_id": "-",
             "session_id": "-",
@@ -1405,7 +1481,7 @@
           },
           {
             "_aws": {
-              "Timestamp": 1789279583498,
+              "Timestamp": 1789280365122,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -1421,11 +1497,11 @@
                 }
               ]
             },
-            "LatencyMs": 4885
+            "LatencyMs": 4973
           },
           {
             "_aws": {
-              "Timestamp": 1789279583498,
+              "Timestamp": 1789280365122,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -1441,11 +1517,11 @@
                 }
               ]
             },
-            "TokensIn": 3336
+            "TokensIn": 3624
           },
           {
             "_aws": {
-              "Timestamp": 1789279583498,
+              "Timestamp": 1789280365122,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -1461,7 +1537,7 @@
                 }
               ]
             },
-            "TokensOut": 121
+            "TokensOut": 117
           }
         ]
       },
@@ -1473,10 +1549,15 @@
           "search_knowledge_base"
         ],
         "fails": [],
-        "ms": 4595,
+        "ms": 4367,
+        "events": [
+          "retrieval",
+          "tool",
+          "routed"
+        ],
         "logs": [
           {
-            "ts": 1789279586115,
+            "ts": 1789280367573,
             "event": "retrieval",
             "trace_id": "-",
             "session_id": "-",
@@ -1490,7 +1571,7 @@
           },
           {
             "_aws": {
-              "Timestamp": 1789279586115,
+              "Timestamp": 1789280367573,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -1509,7 +1590,7 @@
             "RetrievalTop1": 0.3434
           },
           {
-            "ts": 1789279586115,
+            "ts": 1789280367573,
             "event": "tool",
             "trace_id": "-",
             "session_id": "-",
@@ -1518,11 +1599,11 @@
               "query": "net sales ****"
             },
             "status": "ok",
-            "ms": 677
+            "ms": 398
           },
           {
             "_aws": {
-              "Timestamp": 1789279587354,
+              "Timestamp": 1789280368751,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -1538,10 +1619,10 @@
                 }
               ]
             },
-            "TtftMs": 3006
+            "TtftMs": 2731
           },
           {
-            "ts": 1789279588375,
+            "ts": 1789280369788,
             "event": "routed",
             "trace_id": "-",
             "session_id": "-",
@@ -1550,7 +1631,7 @@
           },
           {
             "_aws": {
-              "Timestamp": 1789279588375,
+              "Timestamp": 1789280369788,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -1566,11 +1647,11 @@
                 }
               ]
             },
-            "LatencyMs": 4027
+            "LatencyMs": 3767
           },
           {
             "_aws": {
-              "Timestamp": 1789279588375,
+              "Timestamp": 1789280369788,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",
@@ -1586,11 +1667,11 @@
                 }
               ]
             },
-            "TokensIn": 3603
+            "TokensIn": 3883
           },
           {
             "_aws": {
-              "Timestamp": 1789279588375,
+              "Timestamp": 1789280369788,
               "CloudWatchMetrics": [
                 {
                   "Namespace": "CkAgent",

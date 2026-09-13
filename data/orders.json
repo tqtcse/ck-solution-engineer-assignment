@@ -28,7 +28,7 @@
         "status": "DELAYED",
         "carrier": "USPS",
         "tracking": "9400 1000 0000",
-        "reason": "Thời tiết xấu tại trung tâm chia chọn Memphis",
+        "reason": "Severe weather at the Memphis sorting facility",
         "eta": "2026-09-16",
         "items": [
             "Mechanical Keyboard"
