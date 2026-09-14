@@ -9,6 +9,13 @@ from app.tools import TOOL_SPECS, run_tool
 
 SYSTEM = (config.ROOT / "app" / "prompts" / "system.md").read_text(encoding="utf8")
 MAX_STEPS = 6
+MAX_SEARCHES = 2
+SEARCH_BUDGET_NOTE = (
+    "Search budget exhausted for this turn. Do not call search_knowledge_base again. "
+    "Answer from what has already been retrieved; if nothing relevant was found, tell the "
+    "customer the documents do not mention it."
+)
+STEP_LIMIT_REPLY = "I could not complete that request. Could you rephrase it, or ask something more specific?"
 
 
 def _stream_once(messages):
@@ -96,6 +103,7 @@ def run_turn(state: SessionState, user_text: str):
 
     started, said, usage = time.perf_counter(), [], {}
     ttft = None
+    searches = 0
 
     for _ in range(MAX_STEPS):
         blocks = stop = None
@@ -137,7 +145,13 @@ def run_turn(state: SessionState, user_text: str):
         for tool_id, name, args in calls:
             yield ("tool_start", name)
             tool_started = time.perf_counter()
-            out = run_tool(name, args, state)
+            if name == "search_knowledge_base" and searches >= MAX_SEARCHES:
+                out = {"results": [], "note": SEARCH_BUDGET_NOTE}
+                obs.metric("SearchBudgetHit", 1)
+            else:
+                out = run_tool(name, args, state)
+            if name == "search_knowledge_base":
+                searches += 1
             obs.log("tool", name=name, args=args,
                     status="error" if "error" in out else "ok",
                     ms=int((time.perf_counter() - tool_started) * 1000))
@@ -152,6 +166,10 @@ def run_turn(state: SessionState, user_text: str):
         state.save()
         messages.append({"role": "user", "content": results})
 
+    reply = "\n\n" + STEP_LIMIT_REPLY
+    said.append(reply)
+    obs.log("step_limit", steps=MAX_STEPS)
+    obs.metric("StepLimitHit", 1)
     _finish(state, said, usage, started, routed)
-    yield ("token", "\n(Maximum execution steps reached.)")
+    yield ("token", reply)
     yield ("done", None)
