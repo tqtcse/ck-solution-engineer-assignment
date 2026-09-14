@@ -20,3 +20,6 @@ data/.embed_cache.json
 *.tfstate.backup
 crash.log
 data/.narrate_cache.json
+
+# Working notes, not part of the deliverable
+docs/
