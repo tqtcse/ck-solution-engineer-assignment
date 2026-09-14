@@ -166,10 +166,9 @@ def run_turn(state: SessionState, user_text: str):
         state.save()
         messages.append({"role": "user", "content": results})
 
-    reply = "\n\n" + STEP_LIMIT_REPLY
-    said.append(reply)
+    said.append(STEP_LIMIT_REPLY)
     obs.log("step_limit", steps=MAX_STEPS)
     obs.metric("StepLimitHit", 1)
     _finish(state, said, usage, started, routed)
-    yield ("token", reply)
+    yield ("token", STEP_LIMIT_REPLY)
     yield ("done", None)
