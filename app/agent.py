@@ -2,7 +2,7 @@ import json
 import threading
 import time
 
-from app import config, memory, obs, router
+from app import config, memory, obs, router, verification
 from app.bedrock import client
 from app.session import SessionState
 from app.tools import TOOL_SPECS, run_tool
@@ -18,10 +18,45 @@ SEARCH_BUDGET_NOTE = (
 STEP_LIMIT_REPLY = "I could not complete that request. Could you rephrase it, or ask something more specific?"
 
 
-def _stream_once(messages):
+def _ground_truth(state: SessionState, rejected: list[str]) -> str:
+    if state.verified:
+        return "\n\nServer state: the customer is verified. Identity is settled; do not collect it again."
+    held = sorted(state.collected) or ["none"]
+    lines = [
+        "",
+        "",
+        "Server state, authoritative and recomputed every turn:",
+        "- fields the server holds: " + ", ".join(held),
+        "- fields still required: " + ", ".join(state.missing()),
+        "Never say or imply you hold a field that is absent from the first list. "
+        "Any email address in the customer's latest message has already been submitted for you, "
+        "so do not call submit_verification for an email again this turn; call it for the SSN "
+        "digits and the date of birth.",
+    ]
+    if rejected:
+        lines.append("- the server rejected this from the latest message: " + " ".join(rejected)
+                     + " Relay that wording to the customer.")
+    return "\n".join(lines)
+
+
+def _precollect_email(state: SessionState, user_text: str) -> list[str] | None:
+    if state.verified or "email" in state.collected:
+        return None
+    found = verification.ANY_EMAIL.search(user_text or "")
+    if not found:
+        return None
+    started = time.perf_counter()
+    out = run_tool("submit_verification", {"email": found.group(0)}, state)
+    obs.log("tool", name="submit_verification", args={"email": found.group(0)},
+            status="error" if "error" in out else "ok",
+            ms=int((time.perf_counter() - started) * 1000))
+    return list(out.get("problems") or [])
+
+
+def _stream_once(messages, system_text):
     resp = client().converse_stream(
         modelId=config.CHAT_MODEL,
-        system=[{"text": SYSTEM}],
+        system=[{"text": system_text}],
         messages=messages,
         toolConfig={"tools": TOOL_SPECS},
         inferenceConfig={"maxTokens": 1024, "temperature": 0},
@@ -105,9 +140,15 @@ def run_turn(state: SessionState, user_text: str):
     ttft = None
     searches = 0
 
+    rejected = _precollect_email(state, user_text)
+    if rejected is not None:
+        yield ("tool_start", "submit_verification")
+        yield ("tool_end", "submit_verification")
+    system_text = SYSTEM + _ground_truth(state, rejected or [])
+
     for _ in range(MAX_STEPS):
         blocks = stop = None
-        for kind, payload in _stream_once(messages):
+        for kind, payload in _stream_once(messages, system_text):
             if kind == "__result__":
                 blocks, stop, step_usage = payload
                 for key in ("inputTokens", "outputTokens"):
